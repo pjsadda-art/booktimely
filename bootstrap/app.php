@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'APILog' => \App\Http\Middleware\APILog::class,
             'PlanModuleCheck' => \App\Http\Middleware\PlanModuleCheck::class,
             'jwt.api.auth' => CustomApiAuth::class,
+            '2fa' => \App\Http\Middleware\EnsureTwoFactorVerified::class,
         ]);
         // Append middleware to the 'web' group
         $middleware->appendToGroup('web', SetLang::class);

@@ -13,7 +13,9 @@ class Business extends Model
         'name',
         'status',
         'slug',
-        'is_disable'
+        'is_disable',
+        'allow_2fa',
+        'require_2fa',
     ];
 
     protected static function boot()

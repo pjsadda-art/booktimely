@@ -80,6 +80,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (Auth::user()->requiresTwoFactor()) {
+            $request->session()->put('2fa_verified', false);
+
+            if (!Auth::user()->two_factor_enabled) {
+                return redirect()->route('2fa.setup');
+            }
+
+            return redirect()->route('2fa.challenge');
+        }
+
+        $request->session()->put('2fa_verified', true);
+
         //  User logs
 
         $ip = $_SERVER['REMOTE_ADDR']; // your ip address here
