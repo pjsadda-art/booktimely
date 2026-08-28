@@ -69,6 +69,11 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
         'is_disable',
         'trial_expire_date',
         'is_trial_done',
+        'two_factor_secret',
+        'two_factor_enabled',
+        'two_factor_required',
+        'two_factor_confirmed_at',
+        'two_factor_enabled_at',
     ];
 
     /**
@@ -79,6 +84,7 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
     ];
 
     /**
@@ -89,7 +95,33 @@ class User extends Authenticatable implements LaratrustUser,MustVerifyEmail,JWTS
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'two_factor_secret' => 'encrypted',
+        'two_factor_enabled' => 'boolean',
+        'two_factor_required' => 'boolean',
+        'two_factor_confirmed_at' => 'datetime',
+        'two_factor_enabled_at' => 'datetime',
     ];
+
+    public function recoveryCodes()
+    {
+        return $this->hasMany(UserTwoFactorRecoveryCode::class);
+    }
+
+    public function requiresTwoFactor(): bool
+    {
+        if ($this->two_factor_enabled || $this->two_factor_required) {
+            return true;
+        }
+
+        if ($this->type !== 'super admin') {
+            $business = Business::find($this->business_id);
+            if ($business && $business->require_2fa) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public static $superadmin_activated_module = [
         'LandingPage',

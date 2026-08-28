@@ -105,7 +105,16 @@ Route::get('add-on', [HomeController::class, 'Software'])->name('apps.software')
 Route::get('add-on/details/{slug}', [HomeController::class, 'SoftwareDetails'])->name('software.details');
 Route::get('pricing', [HomeController::class, 'Pricing'])->name('apps.pricing');
 Route::get('/', [HomeController::class, 'index'])->name('start');
-Route::middleware(['auth', 'verified'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'create'])->name('2fa.challenge');
+    Route::post('2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'store'])->name('2fa.verify')->middleware('throttle:5,1');
+    Route::get('2fa/setup', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'setup'])->name('2fa.setup');
+    Route::post('2fa/setup', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'setup'])->name('2fa.setup.post');
+    Route::post('2fa/confirm', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'confirm'])->name('2fa.confirm')->middleware('throttle:5,1');
+});
+
+Route::middleware(['auth', 'verified', '2fa'])->group(function () {
 
     //Role & Permission
     Route::resource('roles', RoleController::class);
@@ -197,6 +206,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/logs/{id}', [UserController::class, 'UserLogView'])->name('users.userlog.view');
     Route::delete('users/logs/destroy/{id}', [UserController::class, 'UserLogDestroy'])->name('users.userlog.destroy');
 
+
+    // Two-Factor Authentication (profile self-service)
+    Route::get('profile/2fa/status', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'status'])->name('2fa.status');
+    Route::post('profile/2fa/disable', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'disable'])->name('2fa.disable');
+    Route::post('profile/2fa/recovery-codes', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'regenerateRecoveryCodes'])->name('2fa.recovery-codes');
+
+    // Two-Factor Authentication (Super Admin management)
+    Route::get('super-admin/users/2fa', [\App\Http\Controllers\SuperAdmin\TwoFactorController::class, 'index'])->name('super.admin.2fa.index');
+    Route::post('super-admin/users/{user}/2fa/require', [\App\Http\Controllers\SuperAdmin\TwoFactorController::class, 'require'])->name('super.admin.2fa.require');
+    Route::post('super-admin/users/{user}/2fa/disable', [\App\Http\Controllers\SuperAdmin\TwoFactorController::class, 'disable'])->name('super.admin.2fa.disable');
+    Route::post('super-admin/users/{user}/2fa/reset', [\App\Http\Controllers\SuperAdmin\TwoFactorController::class, 'reset'])->name('super.admin.2fa.reset');
+
+    // Two-Factor Authentication (company-wide policy)
+    Route::post('company/2fa-settings-save', [\App\Http\Controllers\CompanyTwoFactorSettingsController::class, 'store'])->name('company.2fa.settings.save');
 
     // impersonating
     Route::get('login-with-company/exit', [UserController::class, 'ExitCompany'])->name('exit.company');

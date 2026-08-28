@@ -14,6 +14,8 @@ class Business extends Model
         'status',
         'slug',
         'is_disable',
+        'allow_2fa',
+        'require_2fa',
         'industry_id'
     ];
 
