@@ -545,8 +545,8 @@
                                 </ul>
                                 <ul class="appointment-card-btn d-flex align-items-center justify-content-center">
                                     <li>
-                                        <a href="{{ route('appointment.calendar') }}" data-bs-toggle="tooltip"
-                                            data-bs-original-title="{{ __('Appointment Calendar') }}"
+                                        <a href="{{ route('bookings-v2.calendar') }}" data-bs-toggle="tooltip"
+                                            data-bs-original-title="{{ __('Booking Calendar') }}"
                                             class="btn btn-sm  bg-primary">
                                             <svg fill="#000000" version="1.1" id="Capa_1"
                                                 xmlns="http://www.w3.org/2000/svg"

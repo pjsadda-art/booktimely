@@ -285,41 +285,4 @@ class AppointmentApiController extends Controller
         }
     }
 
-    public function AppointmentCalendarData(Request $request)
-    {
-        $user = Auth::user();
-        $active_business = $user->active_business;
-
-        $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth()->format('d-m-Y');
-        $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth()->format('d-m-Y');
-
-        $appointmentData = Appointment::whereRaw("STR_TO_DATE(date, '%d-%m-%Y') >= STR_TO_DATE(?, '%d-%m-%Y')", [$startDate])
-            ->whereRaw("STR_TO_DATE(date, '%d-%m-%Y') <= STR_TO_DATE(?, '%d-%m-%Y')", [$endDate])
-            ->where('business_id', $active_business)
-            ->get();
-
-        if ($appointmentData->isNotEmpty()) {
-            $appointmentList = $appointmentData->map(function ($value) {
-                $appointmentNumber = Appointment::appointmentNumberFormat($value->id, $value->created_by, $value->business_id);
-
-                $timeParts = explode('-', $value->time);
-                $start = $timeParts[0] ?? 'N/A';
-                $end = $timeParts[1] ?? 'N/A';
-
-                return [
-                    'id' => $value->id,
-                    'appointment_number' => $appointmentNumber,
-                    'service' => $value->ServiceData->name ?? '-',
-                    'from_time' => $start,
-                    'to_time' => $end,
-                    'date' => $value->date,
-                ];
-            });
-            return $this->success($appointmentList);
-        } else {
-            return $this->error(['message' => 'Record not found!']);
-        }
-    }
-
-
 }

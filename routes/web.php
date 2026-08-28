@@ -247,10 +247,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('appointment/list', [AppointmentController::class, 'index'])->name('appointment.list.index');
 
-    Route::get('appointment-calendar', [AppointmentController::class, 'appointmentCalendar'])->name('appointment.calendar');
-    Route::get('appointment-calendar-create', [AppointmentController::class, 'calendarCreate'])->name('appointment.calendar.create');
-    Route::post('appointment-calendar-store', [AppointmentController::class, 'calendarStore'])->name('appointment.calendar.store');
-    Route::get('appointment-calendar-events', [AppointmentController::class, 'calendarEventsJson'])->name('appointment.calendar.events');
+    Route::get('appointment-calendar', function () {
+        return redirect()->route('bookings-v2.calendar', request()->query(), 301);
+    })->name('appointment.calendar');
     Route::get('appointment-details/{id}', [AppointmentController::class, 'appointmentDetails'])->name('appointment.details');
 
 

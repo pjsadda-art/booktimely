@@ -44,7 +44,6 @@ Route::delete('/admin/industries/{id}', [IndustryController::class, 'adminDestro
 Route::get('/tenant/industry', [IndustryController::class, 'tenantShow'])->middleware(['auth:sanctum','APILog']);
 Route::put('/tenant/industry', [IndustryController::class, 'tenantUpdate'])->middleware(['auth:sanctum','APILog']);
 Route::post('/change-appontment-status', [ApiController::class, 'changeAppointmentStatus'])->middleware(['auth:sanctum','APILog']);
-Route::get('/appointment-calendar-data', [ApiController::class, 'getAppointmentCalendarData'])->middleware(['auth:sanctum','APILog']);
 Route::post('/logout', [ApiController::class, 'logout'])->middleware(['APILog']);
 Route::get('/service-list', [ApiController::class, 'getServiceList'])->middleware(['auth:sanctum','APILog']);
 Route::post('/create-service', [ApiController::class, 'createService'])->middleware(['auth:sanctum','APILog']);

@@ -60,8 +60,6 @@ Route::middleware(['custom.jwt'])->group(function () {
         Route::get('appointment/detail/{id}', [AppointmentApiController::class, 'appoitmentDetail']);
         Route::put('appointment-status-change', [AppointmentApiController::class, 'AppointmentStatusChange']);
         Route::get('appointment-status', [AppointmentApiController::class, 'AppointmentStatusList']);
-        Route::get('appointment-calendar', [AppointmentApiController::class, 'AppointmentCalendarData']);
-
         Route::get('custom-status', [CustomStatusApiController::class, 'index']);
         Route::post('custom-status-store', [CustomStatusApiController::class, 'store']);
         Route::put('custom-status-update/{id}', [CustomStatusApiController::class, 'update']);
