@@ -190,9 +190,9 @@
                                                     <ul
                                                         class="appointment-card-btn d-flex align-items-center gap-2 justify-content-center">
                                                         <li>
-                                                            <a href="{{ route('appointment.calendar') }}"
+                                                            <a href="{{ route('bookings-v2.calendar') }}"
                                                                 data-bs-toggle="tooltip"
-                                                                data-bs-original-title="Appointment Calendar"
+                                                                data-bs-original-title="Booking Calendar"
                                                                 class="btn btn-sm ">
                                                                 <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
                                                                     viewBox="0 0 128 128">

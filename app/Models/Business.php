@@ -16,7 +16,13 @@ class Business extends Model
         'is_disable',
         'allow_2fa',
         'require_2fa',
+        'industry_id'
     ];
+
+    public function industry()
+    {
+        return $this->belongsTo(Industry::class);
+    }
 
     protected static function boot()
     {

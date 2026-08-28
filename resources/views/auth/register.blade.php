@@ -54,6 +54,21 @@
                                 </span>
                             @enderror
                         </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">{{ __('Select Industry') }}
+                                <i class="ti ti-info-circle" data-bs-toggle="tooltip" title="{{ __('Choose the industry that best matches your business type.') }}"></i>
+                            </label>
+                            <select id="industry_id" name="industry_id" class="form-control @error('industry_id') is-invalid @enderror" required>
+                                @foreach($industries as $id => $name)
+                                    <option value="{{ $id }}" {{ old('industry_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            @error('industry_id')
+                                <span class="error invalid-name text-danger" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
                         <input type="hidden" name = "type" value="register" id="type">
                         <div class="form-group mb-3">
                             <label class="form-label">{{ __('Email') }}</label>

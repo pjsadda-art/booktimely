@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DefultSetting::class);
         $this->call(LanguageTableSeeder::class);
         $this->call(PackagesName::class);
+        $this->call(IndustriesTableSeeder::class);
         // Last: it needs businesses to exist before it can seed per-business
         // settings and the standard status spine.
         $this->call(ModuleDefaultSettings::class);

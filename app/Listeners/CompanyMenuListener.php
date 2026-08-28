@@ -193,24 +193,11 @@ class CompanyMenuListener
             ]);
         }
         $menu->add([
-            'title' => __('Appointment Calendar'),
-            'icon' => 'calendar custom-icon calender',
-            'name' => 'appointment-calendar',
-            'parent' => null,
-            'order' => 200,
-            'ignore_if' => [],
-            'depend_on' => [],
-            'route' => 'appointment.calendar',
-            'module' => $module,
-            'permission' => 'appointment manage',
-            'group' => 'appointments'
-        ]);
-        $menu->add([
             'title' => __('Booking Calendar'),
             'icon' => 'calendar-time custom-icon calender',
             'name' => 'bookings-v2-calendar',
             'parent' => null,
-            'order' => 205,
+            'order' => 200,
             'ignore_if' => [],
             'depend_on' => [],
             'route' => 'bookings-v2.calendar',

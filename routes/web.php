@@ -18,6 +18,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdmin\SettingsController as SuperAdminSettingsController;
+use App\Http\Controllers\SuperAdmin\IndustryController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\CategoryController;
@@ -244,6 +245,18 @@ Route::middleware(['auth', 'verified', '2fa'])->group(function () {
     Route::resource('category', CategoryController::class);
     // End category
 
+    // Super Admin - Industry Management (System Settings)
+    Route::get('super-admin/industries', [IndustryController::class, 'index'])->name('super.admin.industries.index');
+    Route::post('super-admin/industries', [IndustryController::class, 'store'])->name('super.admin.industries.store');
+    Route::put('super-admin/industries/{industry}', [IndustryController::class, 'update'])->name('super.admin.industries.update');
+    Route::post('super-admin/industries/{industry}/toggle-status', [IndustryController::class, 'toggleStatus'])->name('super.admin.industries.toggle');
+    Route::delete('super-admin/industries/{industry}', [IndustryController::class, 'destroy'])->name('super.admin.industries.destroy');
+    // End Industry Management
+
+    // Tenant - Business Profile industry change
+    Route::post('business/industry-update', [BusinessController::class, 'updateIndustry'])->name('business.industry.update');
+    // End tenant industry
+
     // service
     Route::resource('service', ServiceController::class);
     // End service
@@ -257,10 +270,9 @@ Route::middleware(['auth', 'verified', '2fa'])->group(function () {
 
     Route::post('appointment/list', [AppointmentController::class, 'index'])->name('appointment.list.index');
 
-    Route::get('appointment-calendar', [AppointmentController::class, 'appointmentCalendar'])->name('appointment.calendar');
-    Route::get('appointment-calendar-create', [AppointmentController::class, 'calendarCreate'])->name('appointment.calendar.create');
-    Route::post('appointment-calendar-store', [AppointmentController::class, 'calendarStore'])->name('appointment.calendar.store');
-    Route::get('appointment-calendar-events', [AppointmentController::class, 'calendarEventsJson'])->name('appointment.calendar.events');
+    Route::get('appointment-calendar', function () {
+        return redirect()->route('bookings-v2.calendar', request()->query(), 301);
+    })->name('appointment.calendar');
     Route::get('appointment-details/{id}', [AppointmentController::class, 'appointmentDetails'])->name('appointment.details');
 
 

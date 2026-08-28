@@ -147,6 +147,11 @@
                                 id="files-setting-tab" data-bs-toggle="pill" data-bs-target="#files-setting"
                                 type="button">{{ __('Custom Field') }}</button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link @if (session('tab') and session('tab') == 13) active @endif"
+                                id="industry-setting-tab" data-bs-toggle="pill" data-bs-target="#industry-setting"
+                                type="button">{{ __('Industry') }}</button>
+                        </li>
                         {{-- PWA li  --}}
                         @stack('PWA_menu')
                     </ul>
@@ -1453,6 +1458,60 @@
                             </div>
                             {{ Form::close() }}
                         </div>
+
+                        <div class="tab-pane fade @if (session('tab') and session('tab') == 13) show active @endif"
+                            id="industry-setting" role="tabpanel" aria-labelledby="industry-setting-tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="">{{ __('Industry') }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            {{ Form::open(['route' => 'business.industry.update', 'method' => 'POST', 'id' => 'industry-update-form']) }}
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">{{ __('Current Industry') }}</label>
+                                                <p class="mb-0"><strong>{{ optional($business->industry)->name ?? __('General Booking') }}</strong></p>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">{{ __('Select Industry') }}</label>
+                                                {{ Form::select('industry_id', $activeIndustries ?? \App\Models\Industry::where('is_active', 1)->pluck('name', 'id'), $business->industry_id, ['class' => 'form-control', 'id' => 'industry_id_select']) }}
+                                            </div>
+                                            <button type="button" class="btn btn-primary" id="change-industry-btn">{{ __('Change') }}</button>
+                                            {{ Form::close() }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Industry change warning modal -->
+                        <div class="modal fade" id="industryChangeWarningModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ __('Confirm Industry Change') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ __('Changing industry may update available features and workflows.') }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                                        <button type="button" class="btn btn-primary" id="confirm-industry-change">{{ __('Confirm') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            $(document).on('click', '#change-industry-btn', function() {
+                                var modal = new bootstrap.Modal(document.getElementById('industryChangeWarningModal'));
+                                modal.show();
+                            });
+                            $(document).on('click', '#confirm-industry-change', function() {
+                                $('#industry-update-form').submit();
+                            });
+                        </script>
 
                         {{-- PWA Tab  --}}
                         @stack('PWA_menu_tab')

@@ -160,6 +160,49 @@ class BusinessController extends Controller
         }
     }
 
+    /**
+     * Update the tenant's industry from the Business Profile settings page.
+     * Confirmation is handled client-side via a warning modal before submit.
+     */
+    public function updateIndustry(Request $request)
+    {
+        if (!Auth::user()->isAbleTo('business edit')) {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'industry_id' => 'required|exists:industries,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->getMessageBag()->first());
+        }
+
+        $industry = \App\Models\Industry::find($request->industry_id);
+        if (!$industry->is_active) {
+            return redirect()->back()->with('error', __('Selected industry is not active.'));
+        }
+
+        $business = Business::find(getActiveBusiness());
+        if (!$business) {
+            return redirect()->back()->with('error', __('Business not found.'));
+        }
+
+        $oldIndustryId = $business->industry_id;
+
+        $business->industry_id = $industry->id;
+        $business->save();
+
+        \App\Models\IndustryChangeLog::create([
+            'business_id' => $business->id,
+            'old_industry_id' => $oldIndustryId,
+            'new_industry_id' => $industry->id,
+            'changed_by' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', __('Industry updated successfully!'));
+    }
+
     public function BusinessThemeUpdate(Request $request)
     {
         if (Auth::user()->isAbleTo('business edit')) {
