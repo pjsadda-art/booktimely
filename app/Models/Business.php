@@ -13,8 +13,14 @@ class Business extends Model
         'name',
         'status',
         'slug',
-        'is_disable'
+        'is_disable',
+        'industry_id'
     ];
+
+    public function industry()
+    {
+        return $this->belongsTo(Industry::class);
+    }
 
     protected static function boot()
     {

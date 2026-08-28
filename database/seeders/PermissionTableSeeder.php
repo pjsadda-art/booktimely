@@ -84,7 +84,8 @@ class PermissionTableSeeder extends Seeder
             'language create',
             'language delete',
             'email template manage',
-            'notification template manage'
+            'notification template manage',
+            'industry manage',
         ];
 
         $compnay_permission = [

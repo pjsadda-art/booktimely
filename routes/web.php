@@ -18,6 +18,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdmin\SettingsController as SuperAdminSettingsController;
+use App\Http\Controllers\SuperAdmin\IndustryController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\CategoryController;
@@ -220,6 +221,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // category
     Route::resource('category', CategoryController::class);
     // End category
+
+    // Super Admin - Industry Management (System Settings)
+    Route::get('super-admin/industries', [IndustryController::class, 'index'])->name('super.admin.industries.index');
+    Route::post('super-admin/industries', [IndustryController::class, 'store'])->name('super.admin.industries.store');
+    Route::put('super-admin/industries/{industry}', [IndustryController::class, 'update'])->name('super.admin.industries.update');
+    Route::post('super-admin/industries/{industry}/toggle-status', [IndustryController::class, 'toggleStatus'])->name('super.admin.industries.toggle');
+    Route::delete('super-admin/industries/{industry}', [IndustryController::class, 'destroy'])->name('super.admin.industries.destroy');
+    // End Industry Management
+
+    // Tenant - Business Profile industry change
+    Route::post('business/industry-update', [BusinessController::class, 'updateIndustry'])->name('business.industry.update');
+    // End tenant industry
 
     // service
     Route::resource('service', ServiceController::class);

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\DepositApiController;
 use App\Http\Controllers\Api\WhatsAppWebhookController;
+use App\Http\Controllers\Api\IndustryController;
 
 
 /*
@@ -32,6 +33,16 @@ Route::post('/delete-business', [ApiController::class, 'deleteBusiness'])->middl
 Route::post('/edit-profile', [ApiController::class, 'editProfile'])->middleware(['auth:sanctum','APILog']);
 Route::post('/change-password', [ApiController::class, 'changePassword'])->middleware(['auth:sanctum','APILog']);
 Route::get('/appointment-status-list', [ApiController::class, 'getAppointmentStatusList'])->middleware(['auth:sanctum','APILog']);
+
+// Super Admin - Industry Management
+Route::get('/admin/industries', [IndustryController::class, 'adminIndex'])->middleware(['auth:sanctum','APILog']);
+Route::post('/admin/industries', [IndustryController::class, 'adminStore'])->middleware(['auth:sanctum','APILog']);
+Route::put('/admin/industries/{id}', [IndustryController::class, 'adminUpdate'])->middleware(['auth:sanctum','APILog']);
+Route::delete('/admin/industries/{id}', [IndustryController::class, 'adminDestroy'])->middleware(['auth:sanctum','APILog']);
+
+// Tenant - Industry selection
+Route::get('/tenant/industry', [IndustryController::class, 'tenantShow'])->middleware(['auth:sanctum','APILog']);
+Route::put('/tenant/industry', [IndustryController::class, 'tenantUpdate'])->middleware(['auth:sanctum','APILog']);
 Route::post('/change-appontment-status', [ApiController::class, 'changeAppointmentStatus'])->middleware(['auth:sanctum','APILog']);
 Route::get('/appointment-calendar-data', [ApiController::class, 'getAppointmentCalendarData'])->middleware(['auth:sanctum','APILog']);
 Route::post('/logout', [ApiController::class, 'logout'])->middleware(['APILog']);

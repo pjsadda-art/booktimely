@@ -10,6 +10,7 @@ use App\Models\Plan;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Business;
+use App\Models\Industry;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -59,7 +60,8 @@ class RegisteredUserController extends Controller
                 $lang = array_key_exists($lang, languages()) ? $lang : 'en';
             }
             \App::setLocale($lang);
-            return view('auth.register',compact('lang'));
+            $industries = Industry::where('is_active', 1)->orderBy('name')->pluck('name', 'id');
+            return view('auth.register',compact('lang', 'industries'));
         }
         else
         {
@@ -79,6 +81,7 @@ class RegisteredUserController extends Controller
             'business_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'industry_id' => 'nullable|exists:industries,id',
         ]);
         if(module_is_active('GoogleCaptcha') && admin_setting('google_recaptcha_is_on') == 'on' )
         {
@@ -119,6 +122,8 @@ class RegisteredUserController extends Controller
             $business->form_type    = !empty($request->form_type) ? $request->form_type : 'form-layout';
             $business->layouts      = !empty($request->layouts) ? $request->layouts : 'Formlayout1';
             $business->theme_color  = !empty($request->theme_color) ? $request->theme_color : 'color1-Formlayout1';
+            // Default to "General Booking" (id 1) when the tenant does not pick an industry.
+            $business->industry_id = !empty($request->industry_id) ? $request->industry_id : 1;
             $business->created_by = $user->id;
             $business->save();
 

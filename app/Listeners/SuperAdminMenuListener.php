@@ -145,5 +145,17 @@ class SuperAdminMenuListener
             'module' => $module,
             'permission' => 'module manage'
         ]);
+        $menu->add([
+            'title' => __('Industry Management'),
+            'icon' => 'building-store',
+            'name' => 'industry-management',
+            'parent' => null,
+            'order' => 1050,
+            'ignore_if' => [],
+            'depend_on' => [],
+            'route' => 'super.admin.industries.index',
+            'module' => $module,
+            'permission' => 'industry manage'
+        ]);
     }
 }
