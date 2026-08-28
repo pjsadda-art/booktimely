@@ -1,0 +1,134 @@
+{
+    "business":{
+        "method"        : "GET",
+        "endpoints"           : "/api/businesses",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "active_business": {
+                    "id": 1,
+                    "name": "my-company",
+                    "slug": "my-company"
+                },
+                "businesses": [
+                    {
+                        "id": 1,
+                        "name": "my-company",
+                        "slug": "my-company"
+                    }
+                ]
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "Request-Business":{
+        "method"        : "GET",
+        "endpoints"           : "/api/business/edit/:id",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+              "id": 1,
+              "name": "business-name",
+              "slug": "business-name"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "No data available"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 404 Not Found"
+        }
+    },
+    "update-Business":{
+        "method"        : "PUT",
+        "endpoints"           : "/api/business/update/:id",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            "name":"business-name"
+        },
+        "success_response"      : {
+            "status": "success",
+            "message": "Business updated successfully!"
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "No data available"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 404 Not Found"
+        }
+    },
+    "delete-Business":{
+        "method"        : "DELETE",
+        "endpoints"           : "/api/business/delete/:id",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "message": "Business Deleted Successfully!"
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "You can't delete Business!"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 404 Not Found"
+        }
+    },
+    "change-Business":{
+        "method"        : "GET",
+        "endpoints"           : "/api/business/change/:id",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "message": "User Business change successfully."
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Business not found."
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 404 Not Found"
+        }
+    }
+}

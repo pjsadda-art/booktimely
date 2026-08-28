@@ -1,0 +1,113 @@
+{
+    "customer-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/customer-list",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "id": 1,
+                    "name": "name",
+                    "user_id": 1,
+                    "gender": "male",
+                    "dob": "2024-12-11",
+                    "description": "Description",
+                    "business_id": 1,
+                    "created_by": 2,
+                    "created_at": "2024-12-11T09:13:37.000000Z",
+                    "updated_at": "2024-12-11T09:13:37.000000Z"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "customer-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/customer-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "email": "email@gmail.com",
+            "gender": "Male",
+            "dob": "2024-12-11",
+            "mobile_no": "7878787878"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Customer Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "customer-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/customer-update/:customer_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "email": "email@gmail.com",
+            "gender": "Male",
+            "dob": "2024-12-11",
+            "mobile_no": "7878787878"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Customer Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Customer Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "customer-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/customer-delete/:customer_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Customer Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Customer Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "name": "workdo/collaborative-services",
+    "description": "Description for collaborative-services package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\CollaborativeServices\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "support@workdo.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\CollaborativeServices\\Providers\\CollaborativeServicesServiceProvider",
+                "Workdo\\CollaborativeServices\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

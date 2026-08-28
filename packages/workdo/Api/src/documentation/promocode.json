@@ -1,0 +1,157 @@
+{
+    "promocode-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:PromoCodes/promocodes",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "code": "RCzIbNDJ",
+                "discount_percentage": 20,
+                "flat_rate": 100,
+                "discount_type": 1,
+                "once_per_customer": 0,
+                "services": "0",
+                "use_limit": 20,
+                "promo_used": 2,
+                "start_date": "2024-08-31",
+                "end_date": "2024-10-31",
+                "customers": "0",
+                "business_id": 1,
+                "created_by": 2,
+                "created_at": "2024-05-02T06:49:43.000000Z",
+                "updated_at": "2024-09-02T05:35:05.000000Z"
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "promocode-Store": {
+        "method": "POST",
+        "endpoints": "/api/:PromoCodes/promocodes-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "promo_code": "RCzIbNDJ",
+            "discount": 20,
+            "flat_rate": 100,
+            "discount_type": 1,
+            "once_per_customer": 0,
+            "services": "0",
+            "use_limit": 20,
+            "promo_used": 2,
+            "start_date": "2024-08-31",
+            "end_date": "2024-10-31"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "PromoCode Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "promocode-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:PromoCodes/promocodes/update/:promocode_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+       "request": {
+            "promo_code": "RCzIbNDJ",
+            "discount": 20,
+            "flat_rate": 100,
+            "discount_type": 1,
+            "once_per_customer": 0,
+            "services": "0",
+            "use_limit": 20,
+            "promo_used": 2,
+            "start_date": "2024-08-31",
+            "end_date": "2024-10-31"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "PromoCode Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "PromoCode Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "promocode-Detail":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:PromoCodes/promocodes/details/:promocode_id",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "appointment": 1,
+                "discount_amount": 20,
+                "date": "2024-08-31"
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "promocode-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:PromoCodes/promocodes/delete/:promocode_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "PromoCode Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "PromoCode Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

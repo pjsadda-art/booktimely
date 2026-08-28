@@ -1,0 +1,10 @@
+{
+    "name": "CompoundService",
+    "alias": "Compound Service",
+    "description": "",
+    "priority": 620,
+    "version":1.6,
+    "monthly_price": 0,
+    "yearly_price": 0,
+    "package_name":"compound-service"
+}

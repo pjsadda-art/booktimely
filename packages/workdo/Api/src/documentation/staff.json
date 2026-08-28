@@ -1,0 +1,117 @@
+{
+    "staff-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/staff-list",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "location_list": [
+                        {
+                            "id": 1,
+                            "name": "ABC"
+                        }
+                    ],
+                    "staff_list": [
+                        {
+                            "id": 1,
+                            "name": "Name",
+                            "location_name": "Location Name",
+                            "service_name": "Service Name",
+                            "image": "http://example.com/uploads/default/avatar.png",
+                            "description": "Description"
+                        }
+                    ]
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "staff-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/staff-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "email": "email@gmail.com",
+            "location": "location",
+            "service": "service"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Staff Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "staff-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/staff-update/:staff_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "email": "email@gmail.com",
+            "location": "location",
+            "service": "service"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Staff Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Staff Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "staff-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/staff-delete/:staff_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Staff Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Staff Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

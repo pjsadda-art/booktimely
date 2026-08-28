@@ -1,0 +1,26 @@
+{
+    "name": "workdo/promo-codes",
+    "description": "Description for promo-codes package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\PromoCodes\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "support@workdo.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\PromoCodes\\Providers\\PromoCodesServiceProvider",
+                "Workdo\\PromoCodes\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

@@ -1,0 +1,79 @@
+{
+    "login":{
+        "method"        : "POST",
+        "endpoints"           : "/api/auth/login",
+        "header"        : {
+            "Accept" : "application/json"
+        },
+        "request"       : {
+            "email":"test@example.com",
+            "password":"test123"
+        },
+        "success_response"      : {
+            "status": "success",
+            "authorisation": {
+                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRgOi9vbG9jYWxob3N0L3Byb2R1Y3Qvd29ya2RvLWRhc2gtc2Fhcy9tYWluX2ZpbGUvYXBpL2xvZ2luIiwiaWF0IjoxNjk2NTg0MDE3LCJleHAiOjE2OTgwOTYwMTcsIm5iZiI6MTY5NjU4NDAxNywianRpIjoiSDdmOUtsbzNwbG0zOVNXaiIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.65K2agEHFK5sKbxfo1AjpxKU4cezjvWjtQ7Sbdka9J4",
+                "type": "bearer"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Unauthorized"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "register": {
+        "method": "POST",
+        "endpoints": "/api/auth/register",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "name",
+            "business_name": "business name",
+            "email": "business@gmail.com",
+            "password": "123456"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "User Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "change-Password": {
+        "method": "POST",
+        "endpoints": "/api/auth/change/password",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "current_password": "123456",
+            "new_password": "12345678",
+            "confirm_password": "12345678"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "User Password updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

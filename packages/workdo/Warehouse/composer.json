@@ -1,0 +1,26 @@
+{
+    "name": "workdo/warehouse",
+    "description": "Description for warehouse package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\Warehouse\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "info@sadda.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\Warehouse\\Providers\\WarehouseServiceProvider",
+                "Workdo\\Warehouse\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

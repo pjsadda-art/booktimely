@@ -1,0 +1,10 @@
+{
+    "name": "Invoice",
+    "alias": "Invoice",
+    "description": "",
+    "priority": 2000,
+    "version":1.0,
+    "monthly_price": 0,
+    "yearly_price": 0,
+    "package_name":"invoice"
+}

@@ -1,0 +1,66 @@
+{
+    "googleMeet-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:ZoomMeeting/zoom-meeting",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "appointment_number": "#APP000001",
+                "title": "Title",
+                "staff": "Staff",
+                "date_time": "01-07-2024 17:00",
+                "duration": "50 minutes",
+                "join_url": "https://us04web.zoom.us/j/7183912053",
+                "start_url": "https://us04web.zoom.us/s/71839120539"
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "googleMeet-Detail":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:ZoomMeeting/zoom/meeting/detail/:appointment_id",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "appointment_number": "#APP00000216",
+                "title": "Title",
+                "status": "confirmed",
+                "duration": "50 minutes",
+                "join_url": "https://us04web.zoom.us/j/7183912053",
+                "start_url": "https://us04web.zoom.us/s/71839120539"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    }
+}

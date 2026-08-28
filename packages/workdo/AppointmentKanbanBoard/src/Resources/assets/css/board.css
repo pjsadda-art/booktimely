@@ -1,0 +1,71 @@
+/* Appointment Kanban Board css */
+.card .card-content-top,
+.card-content-bottom .info-wrp  {
+    margin-bottom: 15px;
+}
+.card .card-content:not(:last-of-type){
+    margin-bottom:20px;
+}
+.card-content-top {
+    border: 1px solid #f1f1f1;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.card .card-content h5 {
+    margin: 0;
+
+}
+
+/* card-content-top */
+
+
+.card .card-header .card-header-right .btn.dropdown-toggle {
+    top: 9px;
+}
+
+.card-content-top span svg,
+.card-content svg {
+    height: 15px;
+    width: 15px;
+}
+
+.card-content .action-item:not(:last-of-type) {
+    border-right: 1px solid #d7d7d7;
+}
+
+/* card-content-bottom */
+.card-content-bottom .info-wrp .card-content {
+    max-width: 50%;
+    width: 100%;
+    border: 0;
+    padding: 0 5px;
+}
+
+.card-content-bottom .info-wrp .card-content:first-child {
+    border-right: 1px solid #d7d7d7;
+}
+
+
+.card-content-bottom .payment-btn {
+    color: #fff;
+    border-radius: 5px;
+    font-weight: 600;
+
+}
+
+/* responsive design css */
+@media screen and (max-width:400px) {
+    .card-content-bottom .info-wrp {
+        flex-direction: column;
+    }
+
+    .card-content-bottom .info-wrp .card-content {
+        max-width: 100%;
+    }
+
+    .card-content-bottom .info-wrp .card-content:first-child {
+        margin: 0 0 10px !important;
+        border-right: 0;
+    }
+}

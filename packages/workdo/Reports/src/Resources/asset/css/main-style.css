@@ -1,0 +1,40 @@
+.appointment-table,
+.appointment-table td,
+.appointment-table th  {
+    border-color: #d9d9d9 !important;
+}
+.select-btn {
+    background-color: #0CAF60 !important;
+    color: white !important;
+}
+.appointment-table td,
+.appointment-table th {
+    min-width: 100px;
+}
+.appointment-card-inner .btn {
+    padding: 12px;
+}
+.appointment-card-inner .appointment-content {
+    flex: 1;
+}
+.appointment-card-inner .appointment-content span {
+    display: block;
+    margin-bottom: 8px;
+}
+.appointment-card-inner .appointment-content h2 {
+    margin: 0;
+}
+.app-table-wrp{
+    overflow-x: auto;
+    display: block;
+}
+.app-table-wrp::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+.app-table-wrp::-webkit-scrollbar-track {
+    background: #dddddd;
+}
+.app-table-wrp::-webkit-scrollbar-thumb {
+    background: #000;
+}

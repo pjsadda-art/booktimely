@@ -1,0 +1,26 @@
+{
+    "name": "workdo/quotation",
+    "description": "Description for invoice package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\Quotation\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "info@sadda.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\Quotation\\Providers\\QuotationServiceProvider",
+                "Workdo\\Quotation\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

@@ -1,0 +1,21 @@
+.promo-code-wrapper{
+    position: relative;
+}
+.promo-code-wrapper .btn{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    border-radius: 10px !important;
+}
+.promo-code-wrapper .form-control{
+    padding-right: 95px;
+    border-radius: 10px;
+}
+.appointment_info_details{
+    gap: 15px;
+}
+.promo_code{
+    margin-right: auto;
+}

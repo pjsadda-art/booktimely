@@ -1,0 +1,109 @@
+{
+    "location-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/location-list",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "id": 1,
+                    "name": "ABC",
+                    "image": "http://example.com/uploads/Location/favicon_1733976025.png",
+                    "address": "ABC123",
+                    "phone": "+917485965263",
+                    "description": "Description"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "location-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/location-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "address": "ABC123",
+            "phone": "+917485965263",
+            "description": "Description",
+            "location_image": "image.png"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Location Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "location-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/location-update/:location_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "address": "ABC123",
+            "phone": "+917485965263",
+            "description": "Description",
+            "location_image": "image.png"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Location Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Location Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "location-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/location-delete/:location_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Location Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Location Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

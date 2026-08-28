@@ -1,0 +1,26 @@
+{
+    "name": "workdo/invoice",
+    "description": "Description for invoice package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\Invoice\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "info@sadda.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\Invoice\\Providers\\InvoiceServiceProvider",
+                "Workdo\\Invoice\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

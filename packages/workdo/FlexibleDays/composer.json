@@ -1,0 +1,25 @@
+{
+    "name": "workdo/flexible-days",
+    "description": "Description for flexible-days package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\FlexibleDays\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "support@workdo.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\FlexibleDays\\Providers\\FlexibleDaysServiceProvider"
+            ]
+        }
+    }
+}

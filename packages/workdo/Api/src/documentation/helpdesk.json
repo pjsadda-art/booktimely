@@ -1,0 +1,355 @@
+{
+    "helpdesk-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:Helpdesk/helpdesk",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "ticket_id": 1718357700,
+                "name": "Name",
+                "email": "test@example.com",
+                "subject": "Subject",
+                "status_id": 1,
+                "description": "Description",
+                "note": "Note",
+                "category_name": "Category Name",
+                "color": "#00000"
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "helpdesk-Store": {
+        "method": "POST",
+        "endpoints": "/api/:Helpdesk/helpdesk-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "category": "Category Name",
+            "subject": "Subject",
+            "status": "Status Name",
+            "description": "Description"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:Helpdesk/helpdesk/update/:helpdesk_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "category": "Category Name",
+            "subject": "Subject",
+            "status": "Status Name",
+            "description": "Description"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Ticket Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:Helpdesk/helpdesk/delete/:helpdesk_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Ticket Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "store-Note": {
+        "method": "POST",
+        "endpoints": "/api/:Helpdesk/helpdesk/note/store/:helpdesk_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "note": "Note.."
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Note Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "add-Reply": {
+        "method": "POST",
+        "endpoints": "/api/:Helpdesk/helpdesk/add-reply/:helpdesk_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "reply_description": "Reply Description.."
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Reply Successfully Added!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Category-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:Helpdesk/helpdesk-category",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data":  {
+                "id": 1,
+                "name": "Name",
+                "color": "#00000",
+                "created_by": 1,
+                "created_at": "2024-06-14T03:17:36.000000Z",
+                "updated_at": "2024-06-14T03:17:36.000000Z"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "helpdesk-Category-Store": {
+        "method": "POST",
+        "endpoints": "/api/:Helpdesk/helpdesk-category-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "category_name": "Name",
+            "category_color": "#00000"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Category Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Category-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:Helpdesk/helpdesk/category/update/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "category_name": "Name",
+            "category_color": "#00000"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Category Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Category-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:Helpdesk/helpdesk/category/delete/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Category Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Status-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/helpdesk-status",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data":  {
+               "id": 1,
+                "status_name": "Pending",
+                "status_color": "#ffc107",
+                "created_by": 1,
+                "created_at": "2024-06-14T03:17:36.000000Z",
+                "updated_at": "2024-06-14T03:17:36.000000Z"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "helpdesk-Status-Store": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/helpdesk-status-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "status_name": "Status Name",
+            "status_color": "#00000"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Status Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Status-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:SupportTicket/helpdesk/status/update/:status_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "status_name": "Status Name",
+            "status_color": "#00000"
+
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Status Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Status Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "helpdesk-Status-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:SupportTicket/helpdesk/status/delete/:status_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Status Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Status Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

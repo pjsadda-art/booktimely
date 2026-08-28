@@ -1,0 +1,240 @@
+{
+    "appointment-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/appointment/list",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "appointment_list": [
+                {
+                    "id": 1,
+                    "appointment_number": "#APP000001",
+                    "date": "14-12-2024",
+                    "duration": "09:30-10:00",
+                    "customer": "Nayda Lambert",
+                    "email": "siqyrohyf@mailinator.com",
+                    "contact": "+9187698685464",
+                    "staff": "Maile Ruiz",
+                    "service": "Simone Mcneil",
+                    "location": "ABC",
+                    "payment": "Manually",
+                    "status": "Pending",
+                    "status_color": "5bc0de"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "appointment-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/appointment/store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "customer": "customer name",
+            "location": "xyz",
+            "service": "service name",
+            "staff": "staff name",
+            "appointment_date": "12-12-2024",
+            "duration": "09:30-10:00"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Appointment Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "appointment-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/appointment/update/:appointment_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "customer": "customer name",
+            "location": "xyz",
+            "service": "service name",
+            "staff": "staff name",
+            "appointment_date": "12-12-2024",
+            "duration": "09:30-10:00"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Appointment Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Appointment Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "appointment-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/appointment/delete/:appointment_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Appointment Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Appointment Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "appointment-Detail": {
+        "method": "GET",
+        "endpoints": "/api/:business_slug/appointment/detail/:appointment_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "customer_id": 1,
+                "location_id": 1,
+                "service_id": 1,
+                "staff_id": 1,
+                "name": "name",
+                "email": "email@gmail.com",
+                "contact": "7878787878",
+                "date": "14-12-2024",
+                "notes": "test",
+                "payment_type": "Manually",
+                "appointment_status": "Pending",
+                "created_by": 2,
+                "created_at": "2024-12-13T04:49:11.000000Z",
+                "updated_at": "2024-12-13T04:49:13.000000Z"
+            }
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Appointment Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "appointment-Change-Status": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/appointment-status-change",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "appointment_id": "1",
+            "status": "Pending"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Appointment Status updated successfully!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Appointment Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "appointment-Status-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/appointment-status",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "id": 1,
+                    "title": "Confirm"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "appointment-Calendar":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/appointment-calendar",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "id": 1,
+                    "appointment_number": "#APP000001",
+                    "service": "Simone Mcneil",
+                    "from_time": "10:00",
+                    "to_time": "11:00",
+                    "date": "14-12-2024"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    }
+
+}

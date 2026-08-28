@@ -1,0 +1,26 @@
+{
+    "name": "workdo/compound-service",
+    "description": "Description for compound-service package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\CompoundService\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "support@workdo.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\CompoundService\\Providers\\CompoundServiceServiceProvider",
+                "Workdo\\CompoundService\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

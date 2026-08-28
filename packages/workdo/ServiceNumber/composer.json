@@ -1,0 +1,26 @@
+{
+    "name": "workdo/service-number",
+    "description": "Description for service-number package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\ServiceNumber\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "info@sadda.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\ServiceNumber\\Providers\\ServiceNumberServiceProvider",
+                "Workdo\\ServiceNumber\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

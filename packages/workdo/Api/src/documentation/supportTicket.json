@@ -1,0 +1,650 @@
+{
+    "dashboard":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/dashboard",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "YearWiseChart" : [
+                    {
+                        "name": "Jan",
+                        "value": 0
+                    }
+                ],
+                "chartDatas": [
+                    {
+                        "name": "New Installtion",
+                        "value": 2,
+                        "color": "#27dd2a"
+                    },
+                    {
+                        "name": "Bug",
+                        "value": 2,
+                        "color": "#0d47ba"
+                    },
+                    {
+                        "name": "Support",
+                        "value": 1,
+                        "color": "#cf0707"
+                    }
+                ]
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "ticket-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/tickets",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "ticket_id": "1717039123",
+                "name": "name",
+                "email": "example@gmail.com",
+                "account_type": "type",
+                "subject": "subject",
+                "status": "status",
+                "description": "description",
+                "note": "note",
+                "category_name": "Category name",
+                "color": "#27dd2a"
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+   "ticket-Create":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/tickets/create",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "category": [
+                    {
+                        "id": 1,
+                        "name": "Category Name",
+                        "color": "#00000",
+                        "business_id": 1,
+                        "created_by": "2",
+                        "created_at": "2024-05-29T12:32:08.000000Z",
+                        "updated_at": "2024-05-29T12:32:08.000000Z"
+                    }
+                ],
+                "staff": [
+                    {
+                        "id": 1,
+                        "name": "staff name",
+                        "email": "staff@email.com"
+                    }
+                ],
+                "customer": [
+                    {
+                        "id": 1,
+                        "name": "Customer Name",
+                        "email": "customer@email.com"
+                    }
+                ]
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "ticket-Store": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/ticket/store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Customer Name",
+            "email": "customer@gmail.com",
+            "category": "Category name",
+            "subject": "Subject",
+            "status": "Status",
+            "account_type": "Type"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "ticket-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:SupportTicket/ticket/update/:ticket_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Customer Name",
+            "email": "customer@gmail.com",
+            "category": "Category name",
+            "subject": "Subject",
+            "status": "Status",
+            "account_type": "Type"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Ticket Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "ticket-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:SupportTicket/ticket/delete/:ticket_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Ticket Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "store-Note": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/ticket/note/store/:ticket_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "note": "Note.."
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Note Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "add-Reply": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/ticket/add-reply/:ticket_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "reply_description": "Reply Description.."
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Reply Successfully Added!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "faq-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/faqs",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data":  {
+                "id": 1,
+                "title": "title",
+                "description": "Description"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "faq-Store": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/faqs/store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Title",
+            "description": "Description"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Faq Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "faq-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:SupportTicket/faq/update/:faq_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Title",
+            "description": "Description"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Faq Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Faq Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "faq-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:SupportTicket/faq/delete/:faq_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Faq Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Faq Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "knowledge-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/knowledges",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data":  {
+                "id": 1,
+                "title": "title",
+                "description": "Description",
+                "category": "Category name"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "knowledge-Store": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/knowledge/store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Title",
+            "description": "Description",
+            "category": "Category"
+
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Knowledge Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "knowledge-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:SupportTicket/knowledge/update/:knowledge_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Title",
+            "description": "Description",
+            "category": "Category"
+
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Knowledge Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Knowledge Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "knowledge-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:SupportTicket/knowledge/delete/:knowledge_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Knowledge Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Knowledge Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "knowledge-Category-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/knowledge-categories",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data":  {
+                "1": "Basic Usage",
+                "2": "Installation",
+                "3": "Google ReCaptcha"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "knowledge-Category-Store": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/knowledge-categories-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Title"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Knowledgebase Category Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "knowledge-Category-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:SupportTicket/knowledge-categories-update/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Title"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Knowledgebase Category Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Knowledgebase Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "knowledge-Category-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:SupportTicket/knowledge-categories-delete:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Knowledgebase Category Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Knowledgebase Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "ticket-Category-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:SupportTicket/ticket-categories",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data":  {
+                "id": 1,
+                "name": "name",
+                "color": "#00000",
+                "business_id": 1,
+                "created_by": "2",
+                "created_at": "2024-05-29T12:32:08.000000Z",
+                "updated_at": "2024-05-29T12:32:08.000000Z"
+            }
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "ticket-Category-Store": {
+        "method": "POST",
+        "endpoints": "/api/:SupportTicket/ticket-categories-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "color": "#00000"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Category Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "ticket-Category-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:SupportTicket/ticket-categories-update/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "color": "#00000"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Category Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Ticket Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "ticket-Category-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:SupportTicket/ticket-categories-delete/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Ticket Category Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Ticket Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

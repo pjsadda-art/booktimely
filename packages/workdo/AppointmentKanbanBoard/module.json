@@ -1,0 +1,10 @@
+{
+    "name": "AppointmentKanbanBoard",
+    "alias": "Appointment Kanban Board",
+    "description": "",
+    "priority": 515,
+    "version":1.1,
+    "monthly_price": 0,
+    "yearly_price": 0,
+    "package_name":"appointment-kanban-board"
+}

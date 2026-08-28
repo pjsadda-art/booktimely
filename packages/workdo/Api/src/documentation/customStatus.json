@@ -1,0 +1,100 @@
+{
+    "custom-Status-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/custom-status",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "id": 1,
+                    "title": "Confirmed",
+                    "status_color": "#0CAF60"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "custom-Status-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/custom-status-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Confirmed",
+            "status_color": "#0CAF60"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Custom Status Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "custom-Status-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/custom-status-update/:status_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "title": "Confirmed",
+            "status_color": "#0CAF60"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Custom Status Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Custom Status Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "custom-Status-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/custom-status-delete/:status_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Custom Status Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Custom Status Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

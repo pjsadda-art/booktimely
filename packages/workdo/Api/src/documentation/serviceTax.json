@@ -1,0 +1,103 @@
+{
+    "servicetax-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:ServiceTax/servicetax",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": {
+                "id": 1,
+                "tax_title": "GST",
+                "tax_rate": 12,
+                "business_id": 1,
+                "created_by": 2,
+                "created_at": "2024-05-02T06:39:02.000000Z",
+                "updated_at": "2024-05-02T06:39:02.000000Z"
+            }
+            
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "servicetax-Store": {
+        "method": "POST",
+        "endpoints": "/api/:ServiceTax/servicetax-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "tax_title": "GST",
+            "tax_rate": 20
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Service Tax Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "servicetax-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:ServiceTax/servicetax/update/:servicetax_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "tax_title": "GST",
+            "tax_rate": 20
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Service Tax Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Service Tax Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "servicetax-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:ServiceTax/servicetax/delete/:servicetax_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Service Tax Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Service Tax Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

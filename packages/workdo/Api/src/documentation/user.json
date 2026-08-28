@@ -1,0 +1,132 @@
+{
+    "users-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/users",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                "id": 1,
+                "name": "user",
+                "email": "user@example.com",
+                "avatar": "https://example.com/uploads/users-avatar/avatar.png",
+                "type": "customer"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "user-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/user/store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "user name",
+            "email": "user@gmail.com",
+            "mobile_no": "9898989898",
+            "password": "123456",
+            "type": "company"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "User Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "user-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/user/update/:user_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "user name",
+            "email": "user@gmail.com",
+            "mobile_no": "9898989898",
+            "password": "123456",
+            "type": "company"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "User Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "User Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "user-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/user/delete/:user_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "User Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "User Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "reset-Password": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/user-password-reset/:user_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "password": "123456",
+            "password_confirmation": "123456"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "User Password Reset Successfully!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Use Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

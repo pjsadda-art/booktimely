@@ -1,0 +1,26 @@
+{
+    "name": "workdo/purchases",
+    "description": "Description for purchases package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\Purchases\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "info@sadda.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\Purchases\\Providers\\PurchasesServiceProvider",
+                "Workdo\\Purchases\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

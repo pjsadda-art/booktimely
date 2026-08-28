@@ -1,0 +1,10 @@
+{
+    "name": "Api",
+    "alias": "API",
+    "description": "",
+    "priority": 1300,
+    "version":1.1,
+    "monthly_price": 0,
+    "yearly_price": 0,
+    "package_name":"api"
+}

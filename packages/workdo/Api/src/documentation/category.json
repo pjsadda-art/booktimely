@@ -1,0 +1,97 @@
+{
+    "category-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/category-list",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "id": 1,
+                    "name": "Category Name"
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "category-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/category-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Category Name"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Category Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "category-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/category-update/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Category Name"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Category Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "category-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/category-delete/:category_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Category Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Category Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

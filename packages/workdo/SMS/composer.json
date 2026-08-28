@@ -1,0 +1,33 @@
+{
+    "name": "workdo/sms",
+    "description": "Description for sms package",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "tzsk/sms": "^8.0",
+        "aws/aws-sdk-php": "^3.321",
+        "mediaburst/clockworksms": "^2.0",
+        "twilio/sdk": "^8.3",
+        "melipayamak/php": "^1.0",
+        "kavenegar/php": "^1.2",
+        "smsgatewayme/client": "^0.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Workdo\\SMS\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "support@workdo.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\SMS\\Providers\\SMSServiceProvider"
+            ]
+        }
+    }
+}

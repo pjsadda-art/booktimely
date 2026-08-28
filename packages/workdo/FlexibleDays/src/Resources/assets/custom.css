@@ -1,0 +1,36 @@
+.repeater_first_tbody tr td:last-child{ 
+  width: 80px;
+}
+.repeater_first_tbody tr td{
+  width: 280px;
+}
+
+.repeater_first_tbody tr td .add_break_div{
+  margin-right: 10px;
+}
+.add_break_tr td:last-child{
+  display: flex;
+  flex-wrap: wrap;
+  width: 100% !important;
+  row-gap: 10px;
+}
+.add-break-btn  .break_add:hover{
+  color: #ffff;
+  background-color: #0CAF60;
+
+}
+.add-break-btn  .break_add{
+  padding: 8px 15px;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: all ease-in-out .5s;
+}
+.add_days_btn .btn{
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+.add_days_btn .btn span{
+  display: block;
+  line-height: 1;
+}

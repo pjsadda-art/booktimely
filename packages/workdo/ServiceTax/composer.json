@@ -1,0 +1,26 @@
+{
+    "name": "workdo/service-tax",
+    "description": "Description for service-tax package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\ServiceTax\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "info@sadda.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\ServiceTax\\Providers\\ServiceTaxServiceProvider",
+                "Workdo\\ServiceTax\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Reports",
+    "alias": "Reports",
+    "description": "",
+    "priority": 950,
+    "version":1.2,
+    "monthly_price": 0,
+    "yearly_price": 0,
+    "package_name":"reports"
+}

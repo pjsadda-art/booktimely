@@ -1,0 +1,40 @@
+<?php
+
+namespace Workdo\Invoice\Entities;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Workdo\Invoice\Entities\Invoice;
+
+class InvoicePayment extends Model
+{
+    use HasFactory;
+    protected $fillable = [
+        'invoice_id',
+        'date',
+        'amount',
+        'account_id',
+        'payment_method',
+        'order_id',
+        'currency',
+        'txn_id',
+        'payment_type',
+        'receipt',
+        'add_receipt',
+        'reference',
+        'description',
+    ];
+
+
+    protected $appends = array('invoiceno');
+
+    public function bankAccount()
+    {
+        return $this->hasOne(\Workdo\Account\Entities\BankAccount::class, 'id', 'account_id');
+    }
+
+    public function getInvoicenoAttribute()
+    {
+        return Invoice::invoiceNumberFormat($this->invoice_id);
+    }
+}

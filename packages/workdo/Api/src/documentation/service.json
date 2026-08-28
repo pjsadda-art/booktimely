@@ -1,0 +1,120 @@
+{
+    "service-List":{
+        "method"        : "GET",
+        "endpoints"           : "/api/:business_slug/service/list",
+        "header"        : {
+            "Accept" : "application/json",
+            "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request"       : {
+            
+        },
+        "success_response"      : {
+            "status": "success",
+            "data": [
+                {
+                    "category_list": [
+                        {
+                            "id": 1,
+                            "name": "Category"
+                        }
+                    ],
+                    "service_list": [
+                        {
+                            "id": 1,
+                            "name": "Name",
+                            "category": "Category",
+                            "image": "http://example.com/uploads/Service/favicon_1733908364.png",
+                            "price": "0000",
+                            "duration": "00",
+                            "description": "Description"
+                        }
+                    ]
+                }
+            ]
+        },
+        "error_response"        : {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code"   :{
+            "success":"HTTP/1.1 200 OK",
+            "error":"HTTP/1.1 401 Unauthorized"
+        }
+    },
+    "service-Create": {
+        "method": "POST",
+        "endpoints": "/api/:business_slug/service-store",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "category": "Category",
+            "price": "0000",
+            "duration": "00",
+            "service_image": "image.png"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Service Successfully Created!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Token is absent"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "service-Update": {
+        "method": "PUT",
+        "endpoints": "/api/:business_slug/service-update/:service_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {
+            "name": "Name",
+            "category": "Category",
+            "price": "0000",
+            "duration": "00",
+            "service_image": "image.png"
+        },
+        "success_response": {
+            "status": "success",
+            "message": "Service Successfully Updated!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Service Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    },
+    "service-Delete": {
+        "method": "DELETE",
+        "endpoints": "/api/:business_slug/service-delete/:service_id",
+        "header": {
+            "Accept": "application/json",
+            "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUz..."
+        },
+        "request": {},
+        "success_response": {
+            "status": "success",
+            "message": "Service Successfully Deleted!"
+        },
+        "error_response": {
+            "status": "error",
+            "message": "Service Not Found!"
+        },
+        "status_code": {
+            "success": "HTTP/1.1 200 OK",
+            "error": "HTTP/1.1 404 Not Found"
+        }
+    }
+}

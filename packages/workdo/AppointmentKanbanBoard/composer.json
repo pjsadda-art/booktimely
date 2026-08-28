@@ -1,0 +1,26 @@
+{
+    "name": "workdo/appointment-kanban-board",
+    "description": "Description for appointment-kanban-board package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Workdo\\AppointmentKanbanBoard\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "WorkDo",
+            "email": "support@workdo.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Workdo\\AppointmentKanbanBoard\\Providers\\AppointmentKanbanBoardServiceProvider",
+                "Workdo\\AppointmentKanbanBoard\\Providers\\ViewComposer"
+            ]
+        }
+    }
+}
