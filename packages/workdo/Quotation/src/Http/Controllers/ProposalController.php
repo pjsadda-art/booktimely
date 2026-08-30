@@ -90,6 +90,13 @@ class ProposalController extends Controller
      */
     public function create($customerId)
     {
+        // Pilot toggle (Super Admin Settings > "Use Modern Quotation") — same
+        // pattern as InvoiceController::create()'s "Use Modern Invoice"
+        // branch. $customerId isn't carried over, matching that precedent.
+        if (admin_setting('use_modern_quotation') == 'on') {
+            return redirect()->route('modern-proposal.create');
+        }
+
         if (module_is_active('ProductService')) {
             if (Auth::user()->isAbleTo('proposal create')) {
                 $nextId = DB::select("SHOW TABLE STATUS LIKE 'proposals'")[0]->Auto_increment;
@@ -358,6 +365,13 @@ class ProposalController extends Controller
                     $customFields = null;
                 }
 
+                // Pilot toggle (Super Admin Settings > "Use Modern Quotation"):
+                // an alternate layout over the exact same data — nothing in
+                // the module's own data or logic changes.
+                if (admin_setting('use_modern_quotation') == 'on') {
+                    return view('proposal.modern-view', compact('proposal', 'iteams', 'proposal_attachment'));
+                }
+
                 return view('quotation::proposal.view', compact('proposal', 'customer', 'iteams', 'status', 'customFields', 'proposal_attachment', 'company_settings'));
             } else {
                 return redirect()->route('proposal.index')->with('error', __('Proposal Not Found.'));
@@ -374,6 +388,12 @@ class ProposalController extends Controller
      */
     public function edit($e_id)
     {
+        // Pilot toggle (Super Admin Settings > "Use Modern Quotation") — see
+        // create()'s branch above.
+        if (admin_setting('use_modern_quotation') == 'on') {
+            return redirect()->route('modern-proposal.edit', $e_id);
+        }
+
         if (Auth::user()->isAbleTo('proposal edit')) {
             try {
                 $id       = Crypt::decrypt($e_id);
@@ -681,6 +701,14 @@ class ProposalController extends Controller
     {
         if (Auth::user()->isAbleTo('proposal convert invoice')) {
             $proposal                     = Proposal::where('id', $proposal_id)->first();
+
+            // Index 2 = Accepted (Proposal::$statues) — a quotation the
+            // customer hasn't accepted yet (or has declined) shouldn't turn
+            // into a real invoice.
+            if ((int) $proposal->status !== 2) {
+                return redirect()->back()->with('error', __('Only accepted quotations can be converted to an invoice.'));
+            }
+
             $proposal->is_convert         = 1;
             $convertInvoice                      = new Invoice();
 
@@ -696,6 +724,7 @@ class ProposalController extends Controller
             }
             $convertInvoice->invoice_id          = $this->invoiceNumber();
             $convertInvoice->user_id             = $proposal->customer_id;
+            $convertInvoice->proposal_id         = $proposal->id;
             $convertInvoice->account_type        = $account_type;
             $convertInvoice->issue_date          = date('Y-m-d');
             $convertInvoice->due_date            = date('Y-m-d');

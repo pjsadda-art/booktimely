@@ -1237,11 +1237,13 @@
                                         <div class="card-header">
                                             <div class="row">
                                                 <div class="col-lg-12">
-                                                    <h5>{{ __('Appointment Slot Interval') }}</h5>
+                                                    <h5>{{ __('Calendar Display Settings') }}</h5>
+                                                    <small>{{ __('Controls the booking calendar grid — how finely it\'s divided, and how far it extends before opening / after closing.') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="card-body">
+                                            {{ Form::open(['route' => ['slot.interval-setting', $business->id], 'method' => 'POST']) }}
                                             <div class="theme-detail-card">
                                                 <div class="row gy-3">
                                                     <div class="col-12">
@@ -1250,8 +1252,7 @@
                                                                 class="form-label">{{ __('Slot Interval (Minutes):') }}</label>
                                                             <div class="">
                                                                 <select class="form-control d-inline-block"
-                                                                    id="slot_interval_minutes" name="slot_interval_minutes"
-                                                                    data-url="{{ route('slot.interval-setting', $business->id) }}">
+                                                                    id="slot_interval_minutes" name="slot_interval_minutes">
                                                                     @php
                                                                         $currentSlotInterval = isset($company_settings['calendar_slot_interval']) && in_array((int) $company_settings['calendar_slot_interval'], [5, 10, 15, 20, 30, 60])
                                                                             ? (int) $company_settings['calendar_slot_interval']
@@ -1264,34 +1265,40 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-0">
+                                                            <label class="form-label">{{ __('Show Calendar From (minutes before opening):') }}</label>
+                                                            @php
+                                                                $bufferBefore = isset($company_settings['calendar_buffer_before']) ? (int) $company_settings['calendar_buffer_before'] : 30;
+                                                            @endphp
+                                                            <input type="number" min="0" max="240" class="form-control"
+                                                                id="calendar_buffer_before" name="calendar_buffer_before"
+                                                                value="{{ $bufferBefore }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-0">
+                                                            <label class="form-label">{{ __('Show Calendar Until (minutes after closing):') }}</label>
+                                                            @php
+                                                                $bufferAfter = isset($company_settings['calendar_buffer_after']) ? (int) $company_settings['calendar_buffer_after'] : 60;
+                                                            @endphp
+                                                            <input type="number" min="0" max="240" class="form-control"
+                                                                id="calendar_buffer_after" name="calendar_buffer_after"
+                                                                value="{{ $bufferAfter }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 text-end mt-0">
+                                                        <input class="btn btn-print-invoice btn-primary" type="submit"
+                                                            value="{{ __('Save Changes') }}">
+                                                    </div>
                                                 </div>
                                             </div>
+                                            {{ Form::close() }}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <script>
-                            $(document).on('change', '#slot_interval_minutes', function() {
-                                var $select = $(this);
-                                var url = $select.data('url');
-                                $.ajax({
-                                    url: url,
-                                    method: 'POST',
-                                    data: {
-                                        _token: '{{ csrf_token() }}',
-                                        slot_interval_minutes: $select.val()
-                                    },
-                                    success: function(response) {
-                                        toastrs('{{ __('Success') }}', response.message, 'success');
-                                    },
-                                    error: function(xhr) {
-                                        var message = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : '{{ __('Something went wrong.') }}';
-                                        toastrs('{{ __('Error') }}', message, 'error');
-                                    }
-                                });
-                            });
-                        </script>
 
                         <div class="tab-pane fade @if (session('tab') and session('tab') == 10) show active @endif"
                             id="files-setting" role="tabpanel" aria-labelledby="pills-user-tab-4">
@@ -1351,7 +1358,7 @@
                             </div>
                             {{ Form::close() }}
 
-                            {{ Form::open(['route' => ['custom-field.setting', $business->id], 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
+                            {{ Form::open(['route' => ['custom-field.setting', $business->id], 'method' => 'POST', 'id' => 'custom-field-settings-form', 'enctype' => 'multipart/form-data']) }}
                             @csrf
                             <div class="row business-hrs">
                                 <div class="col-md-12">
@@ -1415,6 +1422,39 @@
 
                                                                 <input type="hidden" name="types[]"
                                                                     value="{{ $custom_field->type }}">
+
+                                                                <div class="form-check form-switch mt-2">
+                                                                    <input type="hidden" name="show_in_appointment[{{ $loop->index }}]" value="0">
+                                                                    <input type="checkbox" class="form-check-input"
+                                                                        name="show_in_appointment[{{ $loop->index }}]" value="1"
+                                                                        id="show_in_appointment_{{ $loop->index }}"
+                                                                        {{ $custom_field->show_in_appointment ? 'checked' : '' }}>
+                                                                    <label class="form-check-label" for="show_in_appointment_{{ $loop->index }}">{{ __('Show in Appointment') }}</label>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-2">
+                                                                    <input type="hidden" name="show_in_quotation[{{ $loop->index }}]" value="0">
+                                                                    <input type="checkbox" class="form-check-input"
+                                                                        name="show_in_quotation[{{ $loop->index }}]" value="1"
+                                                                        id="show_in_quotation_{{ $loop->index }}"
+                                                                        {{ $custom_field->show_in_quotation ? 'checked' : '' }}>
+                                                                    <label class="form-check-label" for="show_in_quotation_{{ $loop->index }}">{{ __('Show in Quotation') }}</label>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-2">
+                                                                    <input type="hidden" name="show_in_invoice[{{ $loop->index }}]" value="0">
+                                                                    <input type="checkbox" class="form-check-input"
+                                                                        name="show_in_invoice[{{ $loop->index }}]" value="1"
+                                                                        id="show_in_invoice_{{ $loop->index }}"
+                                                                        {{ $custom_field->show_in_invoice ? 'checked' : '' }}>
+                                                                    <label class="form-check-label" for="show_in_invoice_{{ $loop->index }}">{{ __('Show in Invoice') }}</label>
+                                                                </div>
+                                                                <div class="form-check form-switch mt-2">
+                                                                    <input type="hidden" name="show_on_online_widget[{{ $loop->index }}]" value="0">
+                                                                    <input type="checkbox" class="form-check-input"
+                                                                        name="show_on_online_widget[{{ $loop->index }}]" value="1"
+                                                                        id="show_on_online_widget_{{ $loop->index }}"
+                                                                        {{ $custom_field->show_on_online_widget ? 'checked' : '' }}>
+                                                                    <label class="form-check-label" for="show_on_online_widget_{{ $loop->index }}">{{ __('Show on Online Widget') }}</label>
+                                                                </div>
 
                                                             </div>
 
@@ -1549,27 +1589,50 @@
                 toastrs('Success', '{{ __('Link copied') }}', 'success')
             });
             $('input[name="labels[]"]').attr('required', true);
+
+            // Rows rendered by Blade use an explicit show_in_appointment[N] index
+            // (N = row position) rather than show_in_appointment[] — a plain
+            // checkbox array silently drops the entry for any unchecked row,
+            // which would misalign it against labels[]/types[] at that same
+            // position. New rows continue that same index from where Blade left off.
+            var newCustomFieldIndex = {{ count($custom_fields) }};
+            function showFlagSwitchHtml(name, index, label) {
+                return '<div class="form-check form-switch mt-2">' +
+                    '<input type="hidden" name="' + name + '[' + index + ']" value="0">' +
+                    '<input type="checkbox" class="form-check-input" name="' + name + '[' + index + ']" value="1" id="' + name + '_' + index + '" checked>' +
+                    '<label class="form-check-label" for="' + name + '_' + index + '">' + label + '</label>' +
+                    '</div>';
+            }
+
+            function showInAppointmentFieldHtml() {
+                var index = newCustomFieldIndex++;
+                return showFlagSwitchHtml('show_in_appointment', index, {{ Js::from(__('Show in Appointment')) }}) +
+                    showFlagSwitchHtml('show_in_quotation', index, {{ Js::from(__('Show in Quotation')) }}) +
+                    showFlagSwitchHtml('show_in_invoice', index, {{ Js::from(__('Show in Invoice')) }}) +
+                    showFlagSwitchHtml('show_on_online_widget', index, {{ Js::from(__('Show on Online Widget')) }});
+            }
+
             $('.btn-add-textfield').click(function() {
                 $('#fields-container').append(
-                    '<div class="row align-items-center"><div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div> <div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="values[]" placeholder="Value" disabled><input type="hidden" name="types[]" value="textfield"></div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
+                    '<div class="row align-items-center"><div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div> <div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="values[]" placeholder="Value" disabled><input type="hidden" name="types[]" value="textfield">' + showInAppointmentFieldHtml() + '</div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
                 );
             });
 
             $('.btn-add-textarea').click(function() {
                 $('#fields-container').append(
-                    '<div class="row align-items-center"> <div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div> <div class="col-sm-5 col-12 mb-3"><textarea name="values[]" class="form-control" placeholder="Value" disabled></textarea><input type="hidden" name="types[]" value="textarea"></div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
+                    '<div class="row align-items-center"> <div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div> <div class="col-sm-5 col-12 mb-3"><textarea name="values[]" class="form-control" placeholder="Value" disabled></textarea><input type="hidden" name="types[]" value="textarea">' + showInAppointmentFieldHtml() + '</div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
                 );
             });
 
             $('.btn-add-date').click(function() {
                 $('#fields-container').append(
-                    '<div class="row align-items-center"><div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div><div class="col-sm-5 col-12 mb-3"><input type="date" class="form-control" name="values[]" value="{{ date('Y-m-d') }}" disabled><input type="hidden" name="types[]" value="date"></div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
+                    '<div class="row align-items-center"><div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div><div class="col-sm-5 col-12 mb-3"><input type="date" class="form-control" name="values[]" value="{{ date('Y-m-d') }}" disabled><input type="hidden" name="types[]" value="date">' + showInAppointmentFieldHtml() + '</div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
                 );
             });
 
             $('.btn-add-number').click(function() {
                 $('#fields-container').append(
-                    '<div class="row align-items-center"><div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div><div class="col-sm-5 col-12 mb-3"><input type="number" class="form-control" name="values[]" placeholder="Value" disabled><input type="hidden" name="types[]" value="number"></div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
+                    '<div class="row align-items-center"><div class="col-sm-5 col-12 mb-3"><input type="text" class="form-control" name="labels[]" placeholder="Label" required></div><div class="col-sm-5 col-12 mb-3"><input type="number" class="form-control" name="values[]" placeholder="Value" disabled><input type="hidden" name="types[]" value="number">' + showInAppointmentFieldHtml() + '</div><div class="col-sm-2 col-12 text-center text-sm-start mb-3"><div class="action-btn"><a href="#" class="btn btn-sm bg-danger btn-delete  align-items-center"><i class="ti ti-trash text-white text-white"></i></a></div></div></div>'
                 );
             });
 
@@ -1602,6 +1665,24 @@
                     // If customFieldId is not available, just remove the row
                     $row.remove();
                 }
+            });
+
+            // A deleted row leaves a gap in the show_in_appointment[N] (and
+            // show_in_quotation[N]/show_in_invoice[N]/show_on_online_widget[N])
+            // indices baked in above; labels[]/ids[]/types[] don't care
+            // (plain [] arrays renumber themselves on submit) but the
+            // explicit-index sets do. Renumber every row's set to its
+            // current DOM position right before the request goes out, so it
+            // lines up with $key in the controller's
+            // `foreach ($request->labels as $key => $label)`.
+            $('#custom-field-settings-form').on('submit', function() {
+                $('#fields-container > .row').each(function(index) {
+                    ['show_in_appointment', 'show_in_quotation', 'show_in_invoice', 'show_on_online_widget'].forEach(function(name) {
+                        $(this).find('input[name^="' + name + '"]').attr(
+                            'name', name + '[' + index + ']'
+                        );
+                    }.bind(this));
+                });
             });
         });
     </script>

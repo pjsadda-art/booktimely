@@ -85,6 +85,8 @@ class BookingV2Controller extends Controller
         $weekStartDay = is_numeric($weekStartDay) ? (int) $weekStartDay : 0;
 
         $slotInterval = $this->slotInterval();
+        $calendarBufferBefore = $this->calendarBufferBefore();
+        $calendarBufferAfter = $this->calendarBufferAfter();
         $licenseKey = config('fullcalendar.scheduler_license_key');
         $selectedLocation = $request->input('location_id');
         $currencySymbol = company_setting('defult_currancy_symbol', Auth::user()->id, $businessId) ?: '$';
@@ -95,6 +97,8 @@ class BookingV2Controller extends Controller
             'staffOptions',
             'weekStartDay',
             'slotInterval',
+            'calendarBufferBefore',
+            'calendarBufferAfter',
             'licenseKey',
             'selectedLocation',
             'currencySymbol'
@@ -445,7 +449,8 @@ class BookingV2Controller extends Controller
             // No SMS log table exists in this schema; the panel hides the
             // section when this is empty.
             'sms_history' => [],
-            'job_card_files' => $jobCardFiles,
+            'job_card_enabled' => jobCardFeatureEnabled(),
+            'job_card_files' => jobCardFeatureEnabled() ? $jobCardFiles : [],
             'details_url' => route('appointment.details', $appointment->id),
         ]);
     }
@@ -558,6 +563,76 @@ class BookingV2Controller extends Controller
                     'email' => $customer->customer->email ?? '',
                 ];
             })->values(),
+        ]);
+    }
+
+    /**
+     * "Convert to Appointment" on an accepted quotation
+     * (proposal/modern-view.blade.php) — the customer plus each line item
+     * that resolves to a real bookable Service (a Parts/product line has
+     * nothing to book, so it's silently skipped), for booking-v2.blade.php
+     * to hand straight to the same New Appointment panel everyone else
+     * uses. Nothing is written here — staff still pick date/time/staff and
+     * save it themselves, same as any other new appointment.
+     *
+     * GET /bookings-v2/proposal-prefill/{e_id}
+     */
+    public function proposalPrefill($e_id)
+    {
+        if (!Auth::user()->isAbleTo('appointment manage')) {
+            return response()->json(['error' => __('Permission denied.')], 403);
+        }
+
+        try {
+            $id = \Illuminate\Support\Facades\Crypt::decrypt($e_id);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => __('Quotation not found.')], 404);
+        }
+
+        $businessId = getActiveBusiness();
+
+        $proposal = \Workdo\Invoice\Entities\Proposal::where('id', $id)
+            ->where('business_id', $businessId)
+            ->first();
+
+        if (!$proposal) {
+            return response()->json(['error' => __('Quotation not found.')], 404);
+        }
+
+        // Index 2 = Accepted (Proposal::$statues) — mirrors the same gate
+        // ProposalController::convert() enforces for Convert to Invoice.
+        if ((int) $proposal->status !== 2) {
+            return response()->json(['error' => __('Only accepted quotations can be converted to an appointment.')], 422);
+        }
+
+        $customerUser = $proposal->customer;
+
+        $serviceIds = [];
+
+        foreach ($proposal->items as $item) {
+            $productService = \Workdo\ProductService\Entities\ProductService::where('id', $item->product_id)
+                ->where('business_id', $businessId)
+                ->first();
+
+            if (!$productService || $productService->type !== 'service' || empty($productService->service_id)) {
+                continue;
+            }
+
+            $units = max(1, (int) round($item->quantity));
+
+            for ($i = 0; $i < $units; $i++) {
+                $serviceIds[] = $productService->service_id;
+            }
+        }
+
+        return response()->json([
+            'customer' => $customerUser ? [
+                'id' => $proposal->customer_id,
+                'name' => $customerUser->name,
+                'mobile' => $customerUser->mobile_no,
+                'email' => $customerUser->email,
+            ] : null,
+            'serviceIds' => $serviceIds,
         ]);
     }
 
@@ -965,6 +1040,7 @@ class BookingV2Controller extends Controller
 
         return CustomField::where('business_id', getActiveBusiness())
             ->where('created_by', creatorId())
+            ->where('show_in_appointment', 1)
             ->orderBy('id')
             ->get()
             ->map(function ($field) {
@@ -1564,5 +1640,25 @@ class BookingV2Controller extends Controller
         }
 
         return max(5, (int) $interval);
+    }
+
+    /**
+     * How far past a staff member's actual working hours the calendar grid
+     * extends, in minutes — was hardcoded (30 before, 60 after) in the client;
+     * now a per-business Setting, defaulting to those same numbers so nobody's
+     * grid changes shape until they explicitly configure it.
+     */
+    protected function calendarBufferBefore(): int
+    {
+        $minutes = company_setting('calendar_buffer_before', Auth::user()->id, getActiveBusiness());
+
+        return is_numeric($minutes) ? max(0, (int) $minutes) : 30;
+    }
+
+    protected function calendarBufferAfter(): int
+    {
+        $minutes = company_setting('calendar_buffer_after', Auth::user()->id, getActiveBusiness());
+
+        return is_numeric($minutes) ? max(0, (int) $minutes) : 60;
     }
 }

@@ -54,6 +54,7 @@
                             @php
                                 $users = \App\Models\User::where('created_by', $id)
                                     ->where('business_id', $user_data['business_id'])
+                                    ->where('type', 'staff')
                                     ->get();
                                 $business = \App\Models\Business::where('id', $user_data['business_id'])->first();
                             @endphp

@@ -67,6 +67,10 @@ class TwoFactorChallengeController extends Controller
 
         TwoFactorAuditLog::record(TwoFactorAuditLog::VERIFY_SUCCESS, $user->id);
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        // redirect()->intended() hasn't been called yet, so the original
+        // destination is still sitting in session('url.intended') — the
+        // trust-device screen reads it via the same call once its own
+        // question is answered.
+        return redirect()->route('2fa.trust-device');
     }
 }

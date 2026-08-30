@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Workdo\Account\Entities\CustomerCreditNotes;
-use App\Models\Invoice;
+use Workdo\Invoice\Entities\Invoice;
 use App\Models\User;
 use Workdo\Account\DataTables\CreditNoteDataTable;
 use Workdo\Account\Entities\AccountUtility;
@@ -44,8 +44,11 @@ class CustomerCreditNotesController extends Controller
         {
 
             $invoiceDue = Invoice::where('id', $invoice_id)->first();
+            // Same cap as store() — what the customer actually paid, minus
+            // whatever's already been credited against this invoice.
+            $creditLimit = $invoiceDue ? $invoiceDue->getTotal() - $invoiceDue->invoiceTotalCustomerCreditNote() : 0;
 
-            return view('account::customerCreditNote.create', compact('invoiceDue', 'invoice_id'));
+            return view('account::customerCreditNote.create', compact('invoiceDue', 'invoice_id', 'creditLimit'));
         }
         else
         {
@@ -76,18 +79,36 @@ class CustomerCreditNotesController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
             $invoiceDue = Invoice::where('id', $invoice_id)->first();
-            if($request->amount > $invoiceDue->getDue())
+
+            // Capped to what the customer actually paid for this invoice
+            // (minus whatever's already been credited against it), not to
+            // its current due — a fully paid invoice has $0 due, but a
+            // credit note is exactly for the case where the customer paid
+            // in full and then had a legitimate complaint, so it still
+            // needs to be issuable. invoiceTotalCustomerCreditNote() (not
+            // invoiceTotalCreditNote(), a different, unrelated entity) is
+            // what actually sums this controller's own CustomerCreditNotes
+            // rows.
+            $creditLimit = $invoiceDue->getTotal() - $invoiceDue->invoiceTotalCustomerCreditNote();
+
+            if($request->amount > $creditLimit)
             {
-                return redirect()->back()->with('error', 'Maximum ' . \Auth::user()->priceFormat($invoiceDue->getDue()) . ' credit limit of this invoice.');
+                // Auth::user()->priceFormat() doesn't exist on this model —
+                // this line would fatal the moment it was actually hit.
+                return redirect()->back()->with('error', 'Maximum ' . currency_format_with_sym($creditLimit) . ' credit limit of this invoice.');
             }
             $invoice = Invoice::where('id', $invoice_id)->first();
 
-            $credit              = new CustomerCreditNotes();
-            $credit->invoice     = $invoice_id;
-            $credit->customer    = $invoice->customer_id;
-            $credit->date        = $request->date;
-            $credit->amount      = $request->amount;
-            $credit->description = $request->description;
+            $credit                   = new CustomerCreditNotes();
+            $credit->invoice          = $invoice_id;
+            $credit->customer         = $invoice->customer_id;
+            $credit->date             = $request->date;
+            $credit->amount           = $request->amount;
+            // The real, redeemable balance (InvoiceController::createPayment()
+            // decrements this when the note is applied as a payment method) —
+            // starts equal to the full amount since nothing's been used yet.
+            $credit->remaining_amount = $request->amount;
+            $credit->description      = $request->description;
             $credit->save();
             AccountUtility::updateUserBalance('customer', $invoice->customer_id, $request->amount, 'debit');
 
@@ -259,13 +280,14 @@ class CustomerCreditNotesController extends Controller
                 }
                 if(!empty($customer))
                 {
-                    $credit              = new CustomerCreditNotes();
-                    $credit->invoice     = $invoice_id;
-                    $credit->customer    = $customer->id;
-                    $credit->date        = $request->date;
-                    $credit->amount      = $request->amount;
-                    $credit->status      = $request->status;
-                    $credit->description = $request->description;
+                    $credit                   = new CustomerCreditNotes();
+                    $credit->invoice          = $invoice_id;
+                    $credit->customer         = $customer->id;
+                    $credit->date             = $request->date;
+                    $credit->amount           = $request->amount;
+                    $credit->remaining_amount = $request->amount;
+                    $credit->status           = $request->status;
+                    $credit->description      = $request->description;
                     $credit->save();
 
                     AccountUtility::updateUserBalance('customer', $invoice->customer_id, $request->amount, 'debit');

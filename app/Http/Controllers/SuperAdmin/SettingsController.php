@@ -48,6 +48,15 @@ class SettingsController extends Controller
             if (!isset($post['email_verification'])) {
                 $post['email_verification'] = 'off';
             }
+            if (!isset($post['require_business_approval'])) {
+                $post['require_business_approval'] = 'off';
+            }
+            if (!isset($post['use_modern_invoice'])) {
+                $post['use_modern_invoice'] = 'off';
+            }
+            if (!isset($post['use_modern_quotation'])) {
+                $post['use_modern_quotation'] = 'off';
+            }
             if (!isset($post['site_transparent'])) {
                 $post['site_transparent'] = 'off';
             }

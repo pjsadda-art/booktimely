@@ -118,6 +118,13 @@ class Customer extends Model
      */
     public function reachableChannels(): array
     {
+        // A walk-in never provided contact details to be reached on in the
+        // first place — this overrides every other toggle, not just the
+        // default one.
+        if ($this->is_walkin) {
+            return ['sms' => false, 'email' => false];
+        }
+
         $preference = $this->notification_preference ?: 'both';
         $user = $this->customer;
 

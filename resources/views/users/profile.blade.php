@@ -30,6 +30,9 @@
                         <a href="#useradd-3"
                             class="list-group-item list-group-item-action border-0">{{ __('Two-Factor Authentication') }} <div
                                 class="float-end"><i class="ti ti-chevron-right"></i></div></a>
+                        <a href="#useradd-3-sessions"
+                            class="list-group-item list-group-item-action border-0">{{ __('Active Sessions') }} <div
+                                class="float-end"><i class="ti ti-chevron-right"></i></div></a>
                         @stack('profile_setting_sidebar')
                     </div>
                 </div>
@@ -179,6 +182,61 @@
                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#regenerateRecoveryModal">{{ __('Regenerate Recovery Codes') }}</button>
                                 @else
                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#regenerateRecoveryModal">{{ __('Regenerate Recovery Codes') }}</button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="useradd-3-sessions">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-2">{{ __('Active Sessions') }}</h5>
+                            <small>{{ __('Devices and IP addresses currently logged in to your account.') }}</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('IP Address') }}</th>
+                                            <th>{{ __('Device / Browser') }}</th>
+                                            <th>{{ __('Last Activity') }}</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($activeSessions as $session)
+                                            <tr>
+                                                <td>{{ $session->ip_address ?: '-' }}</td>
+                                                <td class="text-break">{{ \Illuminate\Support\Str::limit($session->user_agent, 60) ?: '-' }}</td>
+                                                <td>{{ $session->last_activity->diffForHumans() }}</td>
+                                                <td>
+                                                    @if($session->is_current)
+                                                        <span class="badge bg-light-success text-success">{{ __('This Device') }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center">{{ __('No active sessions found.') }}</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="#!" data-url="{{ route('profile.login-history') }}" data-ajax-popup="true" data-size="lg"
+                                    data-title="{{ __('Logon History') }}" class="btn btn-outline-secondary">
+                                    {{ __('Logon History') }}
+                                </a>
+                                @if($activeSessions->where('is_current', false)->count() > 0)
+                                    <form method="POST" action="{{ route('profile.sessions.logout-others') }}"
+                                        onsubmit="return confirm('{{ __('This will log out all other active sessions. Continue?') }}');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-danger">{{ __('Clear Log') }}</button>
+                                    </form>
                                 @endif
                             </div>
                         </div>

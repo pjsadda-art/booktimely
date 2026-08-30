@@ -134,7 +134,16 @@ class HomeController extends Controller
 
                             $custom_field = company_setting('custom_field_enable', $business->created_by, $business->id);
 
-                            $custom_fields = CustomField::where('created_by', $business->created_by)->where('business_id', $business->id)->get();
+                            // This is the public online-booking widget (same
+                            // one AppointmentController::appointmentForm()
+                            // serves at /appointments/{slug}) — gated on its
+                            // own show_on_online_widget flag rather than
+                            // showing every field unconditionally.
+                            $custom_fields = CustomField::where('created_by', $business->created_by)
+                                ->where('business_id', $business->id)
+                                ->whereNotIn('type', ['checkbox', 'radio', 'time', 'select'])
+                                ->where('show_on_online_widget', 1)
+                                ->get();
 
                             $workingDays = BusinessHours::where('created_by', $business->created_by)
                                 ->where('business_id', $business->id)

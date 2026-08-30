@@ -50,6 +50,12 @@
                             </div>
                             <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
                                 <div class="btn-box">
+                                    {!! Form::label('customer_name', __('Customer'), ['class' => 'form-label']) !!}
+                                    {!! Form::text('customer_name', null, ['class' => 'form-control', 'placeholder' => __('Search by name')]) !!}
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+                                <div class="btn-box">
                                     {!! Form::label('service', __('Service'), ['class' => 'form-label']) !!}
                                     {!! Form::select('service', $service ?? null, '', ['class' => 'form-control', 'required' => true]) !!}
                                 </div>

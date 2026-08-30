@@ -14,6 +14,7 @@ class CustomerCreditNotes extends Model
         'invoice',
         'customer',
         'amount',
+        'remaining_amount',
         'date',
     ];
 

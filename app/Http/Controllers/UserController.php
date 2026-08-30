@@ -358,7 +358,18 @@ class UserController extends Controller
         if (Auth::user()->isAbleTo('user profile manage')) {
             $userDetail = \Auth::user();
 
-            return view('users.profile')->with('userDetail', $userDetail);
+            $currentSessionId = session()->getId();
+            $activeSessions = \DB::table('sessions')
+                ->where('user_id', $userDetail->id)
+                ->orderByDesc('last_activity')
+                ->get()
+                ->map(function ($session) use ($currentSessionId) {
+                    $session->last_activity = \Carbon\Carbon::createFromTimestamp($session->last_activity);
+                    $session->is_current = $session->id === $currentSessionId;
+                    return $session;
+                });
+
+            return view('users.profile')->with('userDetail', $userDetail)->with('activeSessions', $activeSessions);
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -681,7 +692,7 @@ class UserController extends Controller
             $businesses = Business::where('created_by', $id)->get();
             $users_data = [];
             foreach ($businesses as $workspce) {
-                $users = User::where('created_by', $id)->where('business_id', $workspce->id)->selectRaw('COUNT(*) as total_users, SUM(CASE WHEN is_disable = 0 THEN 1 ELSE 0 END) as disable_users, SUM(CASE WHEN is_disable = 1 THEN 1 ELSE 0 END) as active_users')->first();
+                $users = User::where('created_by', $id)->where('business_id', $workspce->id)->where('type', 'staff')->selectRaw('COUNT(*) as total_users, SUM(CASE WHEN is_disable = 0 THEN 1 ELSE 0 END) as disable_users, SUM(CASE WHEN is_disable = 1 THEN 1 ELSE 0 END) as active_users')->first();
                 $users_data[$workspce->name] = [
                     'business_id' => $workspce->id,
                     'total_users' => !empty($users->total_users) ? $users->total_users : 0,

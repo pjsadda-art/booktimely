@@ -86,6 +86,9 @@ class PermissionTableSeeder extends Seeder
             'email template manage',
             'notification template manage',
             'industry manage',
+            'business approval manage',
+            'business update',
+            'invoice pay type group manage',
         ];
 
         $compnay_permission = [

@@ -207,7 +207,10 @@ class CompanyMenuListener
         ]);
         $menu->add([
             'title' => __('Staff Roster'),
-            'icon' => 'calendar-week custom-icon calender',
+            // 'calendar-week' isn't a real Tabler Icons glyph in this app's
+            // bundled font (public/assets/fonts/tabler-icons.min.css) — it
+            // rendered blank. 'calendar-stats' is, and reads as a schedule/grid.
+            'icon' => 'calendar-stats custom-icon calender',
             'name' => 'staff-roster',
             'parent' => null,
             'order' => 206,

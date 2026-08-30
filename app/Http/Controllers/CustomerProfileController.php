@@ -60,10 +60,13 @@ class CustomerProfileController extends Controller
             return redirect()->route('customer.index')->with('error', __('Customer not found.'));
         }
 
+        // Job Cards is an Auto Repair-specific feature (paper repair tickets),
+        // not something every industry's tenants have a use for.
+        $jobCardEnabled = jobCardFeatureEnabled($customer->business_id);
+
         $panels = [
             'summary' => $this->tab('summary', fn() => $this->summaryPanel($customer)),
             'appointments' => $this->tab('appointments', fn() => $this->appointmentsPanel($customer)),
-            'job_cards' => $this->tab('job_cards', fn() => $this->jobCardsPanel($customer)),
             'invoices' => $this->tab('invoices', fn() => $this->invoicesPanel($customer)),
             'wallet' => $this->tab('wallet', fn() => $this->walletPanel($customer)),
             'deposits' => $this->tab('deposits', fn() => $this->depositsPanel($customer)),
@@ -72,9 +75,23 @@ class CustomerProfileController extends Controller
             'sms' => $this->tab('sms', fn() => $this->smsPanel($customer)),
         ];
 
+        if ($jobCardEnabled) {
+            $panels['job_cards'] = $this->tab('job_cards', fn() => $this->jobCardsPanel($customer));
+        }
+
+        // Store credit (invoice-issued credit notes redeemable as an invoice
+        // payment method — InvoiceController::createPayment()) only applies
+        // to a real customer, never a walk-in, who has no durable profile to
+        // redeem it against later.
+        $creditNotesEnabled = !$customer->is_walkin;
+
+        if ($creditNotesEnabled) {
+            $panels['credit_notes'] = $this->tab('credit_notes', fn() => $this->creditNotesPanel($customer));
+        }
+
         $currency = company_setting('defult_currancy_symbol', null, $customer->business_id) ?: '$';
 
-        return view('customer.profile', compact('customer', 'panels', 'currency'));
+        return view('customer.profile', compact('customer', 'panels', 'currency', 'jobCardEnabled', 'creditNotesEnabled'));
     }
 
     /**
@@ -141,6 +158,15 @@ class CustomerProfileController extends Controller
             ->where('customer_id', $customer->user_id)
             ->get();
 
+        // Store credit — see creditNotesPanel() for the full breakdown; this
+        // is just the total for the at-a-glance "Totals" tile, so a walk-in
+        // (who can't have any, see the constructor of this method's caller)
+        // isn't even queried for it.
+        $storeCredit = $customer->is_walkin
+            ? 0.0
+            : (float) \Workdo\Account\Entities\CustomerCreditNotes::where('customer', $customer->id)
+                ->sum('remaining_amount');
+
         return [
             'reliability' => $this->reliability->forCustomer($customer->user_id, $businessId, $createdBy),
             'total_appointments' => $appointments->count(),
@@ -149,6 +175,25 @@ class CustomerProfileController extends Controller
             'no_shows' => $counts['no_shows'],
             'lifetime_sales' => round((float) $invoices->sum('paid_total'), 2),
             'outstanding' => round((float) $invoices->sum(fn($invoice) => $invoice->outstanding()), 2),
+            'store_credit' => round($storeCredit, 2),
+        ];
+    }
+
+    /**
+     * Every credit note issued for this customer (Workdo's Account module —
+     * CustomerCreditNotesController), and the total still redeemable.
+     * CustomerCreditNotes.customer is the same id as invoices.customer_id,
+     * which is this Customer row's own primary key — not the user id.
+     */
+    protected function creditNotesPanel(Customer $customer): array
+    {
+        $notes = \Workdo\Account\Entities\CustomerCreditNotes::where('customer', $customer->id)
+            ->orderByDesc('date')
+            ->get();
+
+        return [
+            'notes' => $notes,
+            'available_total' => round((float) $notes->sum('remaining_amount'), 2),
         ];
     }
 
@@ -393,6 +438,34 @@ class CustomerProfileController extends Controller
         return redirect()->back()->with('success', $customer->is_high_risk
             ? __('Customer flagged as high risk. New bookings will require a deposit.')
             : __('High-risk flag removed.'));
+    }
+
+    /**
+     * Toggle the Walk-in flag.
+     *
+     * A walk-in customer record (e.g. a generic "walk-in" placeholder used for
+     * anonymous counter sales) never gave real contact details and never
+     * consented to being messaged — see Customer::reachableChannels(), which
+     * this overrides ahead of every other communication toggle.
+     */
+    public function toggleWalkin(Request $request, $id)
+    {
+        if (!Auth::user()->isAbleTo('customer edit')) {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+
+        $customer = $this->findCustomer($id);
+
+        if (empty($customer)) {
+            return redirect()->back()->with('error', __('Customer not found.'));
+        }
+
+        $customer->is_walkin = !$customer->is_walkin;
+        $customer->save();
+
+        return redirect()->back()->with('success', $customer->is_walkin
+            ? __('Customer flagged as walk-in. They will receive no SMS or email communication.')
+            : __('Walk-in flag removed.'));
     }
 
     /**

@@ -94,6 +94,9 @@ Route::get('check-service-online-meeting-form-layout/{businessSlug}', [ServiceCo
 require __DIR__ . '/auth.php';
 
 Route::get('/register/{lang?}', [RegisteredUserController::class, 'create'])->name('register');
+Route::get('/registration-pending', function () {
+    return view('auth.registration-pending');
+})->name('registration.pending');
 Route::get('/login/{lang?}', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::get('/forgot-password/{lang?}', [PasswordResetLinkController::class, 'create'])->name('password.request');
 Route::get('/verify-email/{lang?}', [EmailVerificationPromptController::class, '__invoke'])->name('verification.notice');
@@ -109,12 +112,28 @@ Route::get('/', [HomeController::class, 'index'])->name('start');
 Route::middleware(['auth'])->group(function () {
     Route::get('2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'create'])->name('2fa.challenge');
     Route::post('2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'store'])->name('2fa.verify')->middleware('throttle:5,1');
+    Route::get('2fa/trust-device', [\App\Http\Controllers\Auth\TrustedDeviceController::class, 'create'])->name('2fa.trust-device');
+    Route::post('2fa/trust-device', [\App\Http\Controllers\Auth\TrustedDeviceController::class, 'store'])->name('2fa.trust-device.store');
     Route::get('2fa/setup', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'setup'])->name('2fa.setup');
     Route::post('2fa/setup', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'setup'])->name('2fa.setup.post');
     Route::post('2fa/confirm', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'confirm'])->name('2fa.confirm')->middleware('throttle:5,1');
 });
 
 Route::middleware(['auth', 'verified', '2fa'])->group(function () {
+
+    // Modern Invoice pilot — reached only via InvoiceController::create()'s
+    // branch when Super Admin Settings > "Use Modern Invoice" is on.
+    Route::get('modern-invoice/create', [\App\Http\Controllers\ModernInvoiceController::class, 'create'])->name('modern-invoice.create');
+    Route::post('modern-invoice', [\App\Http\Controllers\ModernInvoiceController::class, 'store'])->name('modern-invoice.store');
+    Route::get('modern-invoice/{e_id}/edit', [\App\Http\Controllers\ModernInvoiceController::class, 'edit'])->name('modern-invoice.edit');
+    Route::put('modern-invoice/{e_id}', [\App\Http\Controllers\ModernInvoiceController::class, 'update'])->name('modern-invoice.update');
+
+    // Modern Quotation pilot — reached only via ProposalController::create()'s
+    // branch when Super Admin Settings > "Use Modern Quotation" is on.
+    Route::get('modern-proposal/create', [\App\Http\Controllers\ModernProposalController::class, 'create'])->name('modern-proposal.create');
+    Route::post('modern-proposal', [\App\Http\Controllers\ModernProposalController::class, 'store'])->name('modern-proposal.store');
+    Route::get('modern-proposal/{e_id}/edit', [\App\Http\Controllers\ModernProposalController::class, 'edit'])->name('modern-proposal.edit');
+    Route::put('modern-proposal/{e_id}', [\App\Http\Controllers\ModernProposalController::class, 'update'])->name('modern-proposal.update');
 
     //Role & Permission
     Route::resource('roles', RoleController::class);
@@ -207,6 +226,10 @@ Route::middleware(['auth', 'verified', '2fa'])->group(function () {
     Route::delete('users/logs/destroy/{id}', [UserController::class, 'UserLogDestroy'])->name('users.userlog.destroy');
 
 
+    // Active sessions & login history (profile self-service)
+    Route::get('profile/login-history', [\App\Http\Controllers\SecuritySessionController::class, 'loginHistory'])->name('profile.login-history');
+    Route::post('profile/sessions/logout-others', [\App\Http\Controllers\SecuritySessionController::class, 'logoutOtherSessions'])->name('profile.sessions.logout-others');
+
     // Two-Factor Authentication (profile self-service)
     Route::get('profile/2fa/status', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'status'])->name('2fa.status');
     Route::post('profile/2fa/disable', [\App\Http\Controllers\TwoFactorAuthenticationController::class, 'disable'])->name('2fa.disable');
@@ -253,6 +276,20 @@ Route::middleware(['auth', 'verified', '2fa'])->group(function () {
     Route::delete('super-admin/industries/{industry}', [IndustryController::class, 'destroy'])->name('super.admin.industries.destroy');
     // End Industry Management
 
+    // Super Admin - Invoice Pay Type Groups (System Settings)
+    Route::get('super-admin/invoice-pay-type-groups', [\App\Http\Controllers\SuperAdmin\InvoicePayTypeGroupController::class, 'index'])->name('super.admin.invoice-pay-type-groups.index');
+    Route::post('super-admin/invoice-pay-type-groups', [\App\Http\Controllers\SuperAdmin\InvoicePayTypeGroupController::class, 'store'])->name('super.admin.invoice-pay-type-groups.store');
+    Route::put('super-admin/invoice-pay-type-groups/{invoicePayTypeGroup}', [\App\Http\Controllers\SuperAdmin\InvoicePayTypeGroupController::class, 'update'])->name('super.admin.invoice-pay-type-groups.update');
+    Route::post('super-admin/invoice-pay-type-groups/{invoicePayTypeGroup}/toggle-status', [\App\Http\Controllers\SuperAdmin\InvoicePayTypeGroupController::class, 'toggleStatus'])->name('super.admin.invoice-pay-type-groups.toggle');
+    Route::delete('super-admin/invoice-pay-type-groups/{invoicePayTypeGroup}', [\App\Http\Controllers\SuperAdmin\InvoicePayTypeGroupController::class, 'destroy'])->name('super.admin.invoice-pay-type-groups.destroy');
+    // End Invoice Pay Type Groups
+
+    // Super Admin - Business Registration Approvals
+    Route::get('super-admin/business-approvals', [\App\Http\Controllers\SuperAdmin\BusinessApprovalController::class, 'index'])->name('super.admin.business-approvals.index');
+    Route::post('super-admin/business-approvals/{business}/approve', [\App\Http\Controllers\SuperAdmin\BusinessApprovalController::class, 'approve'])->name('super.admin.business-approvals.approve');
+    Route::post('super-admin/business-approvals/{business}/reject', [\App\Http\Controllers\SuperAdmin\BusinessApprovalController::class, 'reject'])->name('super.admin.business-approvals.reject');
+    // End Business Registration Approvals
+
     // Tenant - Business Profile industry change
     Route::post('business/industry-update', [BusinessController::class, 'updateIndustry'])->name('business.industry.update');
     // End tenant industry
@@ -283,6 +320,7 @@ Route::middleware(['auth', 'verified', '2fa'])->group(function () {
     Route::get('bookings-v2/form-data', [BookingV2Controller::class, 'formData'])->name('bookings-v2.form-data');
     Route::get('bookings-v2/customers', [BookingV2Controller::class, 'searchCustomers'])->name('bookings-v2.customers');
     Route::get('bookings-v2/customers/{id}/history', [BookingV2Controller::class, 'customerAppointments'])->name('bookings-v2.customer.history');
+    Route::get('bookings-v2/proposal-prefill/{e_id}', [BookingV2Controller::class, 'proposalPrefill'])->name('bookings-v2.proposal-prefill');
     Route::get('bookings-v2/appointments/{id}', [BookingV2Controller::class, 'getAppointment'])->name('bookings-v2.appointment');
     Route::post('bookings-v2/appointments', [BookingV2Controller::class, 'storeAppointments'])->name('bookings-v2.appointment.store');
     Route::put('bookings-v2/appointments/{id}', [BookingV2Controller::class, 'updateAppointment'])->name('bookings-v2.appointment.update');
@@ -345,6 +383,7 @@ Route::middleware(['auth', 'verified', '2fa'])->group(function () {
     Route::get('customer/{customer}/profile', [CustomerProfileController::class, 'show'])->name('customer.profile');
     Route::post('customer/{customer}/note', [CustomerProfileController::class, 'storeNote'])->name('customer.note.store');
     Route::post('customer/{customer}/risk', [CustomerProfileController::class, 'toggleRisk'])->name('customer.toggle-risk');
+    Route::post('customer/{customer}/walkin', [CustomerProfileController::class, 'toggleWalkin'])->name('customer.toggle-walkin');
     Route::post('customer/{customer}/communication', [CustomerProfileController::class, 'updateCommunication'])->name('customer.communication.update');
     // End customer
 

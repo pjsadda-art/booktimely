@@ -148,6 +148,18 @@ class AppointmentDataTable extends DataTable
             $Appointments = $Appointments->where('date', $date);
         }
 
+        if ($request->customer_name) {
+            // Same match the customer_id column's own filterColumn() above
+            // uses — a registered customer's name, or the guest name stored
+            // directly on the appointment.
+            $customerName = $request->customer_name;
+            $Appointments = $Appointments->where(function ($query) use ($customerName) {
+                $query->whereHas('CustomerData', function ($q) use ($customerName) {
+                    $q->where('name', 'like', "%$customerName%");
+                })->orWhere('name', 'like', "%$customerName%");
+            });
+        }
+
         if ($request->service) {
             $Appointments = $Appointments->where('service_id', $request->service);
         }
@@ -168,6 +180,7 @@ class AppointmentDataTable extends DataTable
             ->ajax([
                 'data' => 'function(d) {
                     d.date = $("input[name=date]").val();
+                    d.customer_name = $("input[name=customer_name]").val();
                     d.service = $("select[name=service]").val();
                 }',
             ])
@@ -185,7 +198,7 @@ class AppointmentDataTable extends DataTable
             ->initComplete('function() {
                 var table = this;
                 $("body").on("click", "#applyfilter", function() {
-                    if (!$("input[name=date]").val() && !$("select[name=service]").val()) {
+                    if (!$("input[name=date]").val() && !$("input[name=customer_name]").val() && !$("select[name=service]").val()) {
                         toastrs("Error!", "Please select Atleast One Filter ", "error");
                         return;
                     }
@@ -194,6 +207,7 @@ class AppointmentDataTable extends DataTable
 
                 $("body").on("click", "#clearfilter", function() {
                     $("input[name=date]").val("")
+                    $("input[name=customer_name]").val("")
                     $("select[name=service]").val("")
                     $("#appointment-table").DataTable().draw();
                 });

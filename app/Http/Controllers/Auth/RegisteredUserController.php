@@ -112,6 +112,8 @@ class RegisteredUserController extends Controller
         ]);
         Auth::login($user);
 
+        $requiresApproval = admin_setting('require_business_approval') == 'on';
+
         $role_r = Role::where('name','company')->first();
         if(!empty($user))
         {
@@ -124,6 +126,7 @@ class RegisteredUserController extends Controller
             $business->theme_color  = !empty($request->theme_color) ? $request->theme_color : 'color1-Formlayout1';
             // Default to "General Booking" (id 1) when the tenant does not pick an industry.
             $business->industry_id = !empty($request->industry_id) ? $request->industry_id : 1;
+            $business->registration_status = $requiresApproval ? 'pending' : 'approved';
             $business->created_by = $user->id;
             $business->save();
 
@@ -137,7 +140,7 @@ class RegisteredUserController extends Controller
             $user->MakeRole();
 
 
-            if(!empty($request->type) && $request->type != "pricing")
+            if(!$requiresApproval && !empty($request->type) && $request->type != "pricing")
             {
                 $plan = Plan::where('is_free_plan',1)->first();
                 if($plan)
@@ -174,6 +177,14 @@ class RegisteredUserController extends Controller
                 $user_work->save();
             }
 
+        }
+
+        if ($requiresApproval) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('registration.pending');
         }
 
         return redirect()->route('plans.index',['type'=>'subscription']);
