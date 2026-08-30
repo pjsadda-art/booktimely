@@ -18,6 +18,7 @@ use App\Models\BusinessHoliday;
 use App\Events\DestroyBusiness;
 use App\Events\DefaultData;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 
 class BusinessController extends Controller
 {
@@ -456,8 +457,14 @@ class BusinessController extends Controller
                 // Check if the record exists, and update or insert accordingly
                 Setting::updateOrInsert($data, ['value' => $value]);
             }
-            // Settings Cache forget
+            // Settings Cache forget. comapnySettingCacheForget() infers the
+            // business/owner from whoever is *currently logged in* — wrong when
+            // a super admin edits someone else's business, which is exactly how
+            // this screen gets used; that left stale settings cached forever
+            // for the actual tenant, invisible to the person editing it since
+            // they'd hit their own (correctly-cleared) cache key instead.
             comapnySettingCacheForget();
+            Cache::forget('company_settings_' . $business->id . '_' . $business->created_by);
             $tab = 7;
             return redirect()->back()->with('success', __('Custom setting save sucessfully.'))->with('tab', $tab);
         } else {
@@ -488,8 +495,10 @@ class BusinessController extends Controller
 
             // Check if the record exists, and update or insert accordingly
             Setting::updateOrInsert($data, ['value' => $request->maximum_slot]);
-            // Settings Cache forget
+            // Settings Cache forget — see the comment in domainsetting() above
+            // for why the explicit key is needed alongside the generic helper.
             comapnySettingCacheForget();
+            Cache::forget('company_settings_' . $business->id . '_' . $business->created_by);
             $tab = 8;
             return redirect()->back()->with('success', __('Slot capacity setting save sucessfully.'))->with('tab', $tab);
         } else {
@@ -511,6 +520,8 @@ class BusinessController extends Controller
             $request->all(),
             [
                 'slot_interval_minutes' => 'required|integer|in:5,10,15,20,30,60',
+                'calendar_buffer_before' => 'required|integer|min:0|max:240',
+                'calendar_buffer_after' => 'required|integer|min:0|max:240',
             ]
         );
         if ($validator->fails()) {
@@ -521,20 +532,32 @@ class BusinessController extends Controller
             return redirect()->back()->with('error', $message);
         }
 
-        $data = [
-            'key' => 'calendar_slot_interval',
-            'business' => $id,
-            'created_by' => $business->created_by,
-        ];
-
-        Setting::updateOrInsert($data, ['value' => $request->slot_interval_minutes]);
+        Setting::updateOrInsert(
+            ['key' => 'calendar_slot_interval', 'business' => $id, 'created_by' => $business->created_by],
+            ['value' => $request->slot_interval_minutes]
+        );
+        Setting::updateOrInsert(
+            ['key' => 'calendar_buffer_before', 'business' => $id, 'created_by' => $business->created_by],
+            ['value' => $request->calendar_buffer_before]
+        );
+        Setting::updateOrInsert(
+            ['key' => 'calendar_buffer_after', 'business' => $id, 'created_by' => $business->created_by],
+            ['value' => $request->calendar_buffer_after]
+        );
+        // comapnySettingCacheForget() infers the business/owner from whoever is
+        // *currently logged in* — wrong when a super admin edits someone else's
+        // business, which is exactly how this screen gets used; that left the
+        // old interval cached forever for the actual tenant (and their booking
+        // calendar), invisible to the super admin since they'd hit their own
+        // (correctly-cleared, but irrelevant) cache key instead.
         comapnySettingCacheForget();
+        Cache::forget('company_settings_' . $business->id . '_' . $business->created_by);
         $tab = 8;
 
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => __('Slot interval updated. Calendar grid will adjust automatically.')]);
+            return response()->json(['success' => true, 'message' => __('Calendar display settings updated.')]);
         }
-        return redirect()->back()->with('success', __('Slot interval updated. Calendar grid will adjust automatically.'))->with('tab', $tab);
+        return redirect()->back()->with('success', __('Calendar display settings updated.'))->with('tab', $tab);
     }
 
     public function appointmentRemindersetting($id, Request $request)
@@ -560,8 +583,10 @@ class BusinessController extends Controller
 
             // Check if the record exists, and update or insert accordingly
             Setting::updateOrInsert($data, ['value' => $request->reminder_interval]);
-            // Settings Cache forget
+            // Settings Cache forget — see the comment in domainsetting() above
+            // for why the explicit key is needed alongside the generic helper.
             comapnySettingCacheForget();
+            Cache::forget('company_settings_' . $business->id . '_' . $business->created_by);
             $tab = 8;
             return redirect()->back()->with('success', __('Appointment Reminder setting save sucessfully.'))->with('tab', $tab);
         } else {

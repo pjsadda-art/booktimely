@@ -45,7 +45,8 @@
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Description') }}</th>
                                     <th>{{ __('Status') }}</th>
-                                    <th>{{ __('Default') }}</th>
+                                    <th>{{ __('System') }}</th>
+                                    <th>{{ __('Businesses') }}</th>
                                     <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -63,8 +64,11 @@
                                         </td>
                                         <td>
                                             @if($industry->is_system_default)
-                                                <span class="badge bg-info">{{ __('System Default') }}</span>
+                                                <span class="badge bg-info" data-bs-toggle="tooltip" title="{{ __('Protected — cannot be renamed, deactivated, or deleted.') }}">{{ __('Protected') }}</span>
                                             @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ $industry->businesses_count }}</span>
                                         </td>
                                         <td>
                                             <div class="action-btn">
@@ -102,16 +106,32 @@
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                             </div>
                                                             <div class="modal-body">
+                                                                @if($industry->is_system_default)
+                                                                    <div class="alert alert-info py-2 px-3 mb-3" style="white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                                                        <i class="ti ti-lock"></i>
+                                                                        {{ __('This is a protected system industry — its name and active status are locked. Only the description can be edited.') }}
+                                                                    </div>
+                                                                @endif
                                                                 <div class="form-group mb-3">
                                                                     <label class="form-label">{{ __('Name') }}</label>
-                                                                    <input type="text" name="name" class="form-control" value="{{ $industry->name }}"
-                                                                        {{ $industry->is_system_default ? 'readonly' : '' }} required>
+                                                                    @if($industry->is_system_default)
+                                                                        <input type="text" class="form-control" value="{{ $industry->name }}" disabled>
+                                                                        <input type="hidden" name="name" value="{{ $industry->name }}">
+                                                                    @else
+                                                                        <input type="text" name="name" class="form-control" value="{{ $industry->name }}" required>
+                                                                    @endif
                                                                 </div>
                                                                 <div class="form-group mb-3">
                                                                     <label class="form-label">{{ __('Description') }}</label>
                                                                     <textarea name="description" class="form-control">{{ $industry->description }}</textarea>
                                                                 </div>
-                                                                @if(!$industry->is_system_default)
+                                                                @if($industry->is_system_default)
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="form-label d-block">{{ __('Status') }}</label>
+                                                                        <span class="badge bg-success">{{ __('Active') }}</span>
+                                                                        <small class="text-muted d-block mt-1">{{ __('Protected industries are always active.') }}</small>
+                                                                    </div>
+                                                                @else
                                                                     <div class="form-group mb-0 form-check">
                                                                         <input type="checkbox" name="is_active" class="form-check-input" id="is_active{{ $industry->id }}" value="1" {{ $industry->is_active ? 'checked' : '' }}>
                                                                         <label class="form-check-label" for="is_active{{ $industry->id }}">{{ __('Active') }}</label>
@@ -130,7 +150,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">{{ __('No industries found.') }}</td>
+                                        <td colspan="6" class="text-center">{{ __('No industries found.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

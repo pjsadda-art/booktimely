@@ -12,9 +12,10 @@
                 data-ajax-popup="true"
                 data-title="{{ __('Create Pay Type') }}"
                 data-bs-toggle="tooltip"
-                title="{{ __('Create') }}"
+                data-bs-placement="top"
+                title="{{ __('Create new Pay Types') }}"
                 class="btn btn-sm btn-primary">
-                <i class="ti ti-plus"></i> {{ __('Create') }}
+                <i class="ti ti-plus"></i>
             </a>
         @endpermission
     </div>
@@ -33,6 +34,7 @@
                                 <tr>
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Description') }}</th>
+                                    <th>{{ __('Group') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     @if (Laratrust::hasPermission('invoice pay type edit') || Laratrust::hasPermission('invoice pay type delete'))
                                         <th width="10%">{{ __('Action') }}</th>
@@ -44,6 +46,13 @@
                                     <tr>
                                         <td>{{ $pay_type->name }}</td>
                                         <td>{{ $pay_type->description ?? '-' }}</td>
+                                        <td>
+                                            @if ($pay_type->group)
+                                                <span class="badge bg-secondary">{{ $pay_type->group->name }}</span>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td>
                                             @if ($pay_type->is_active)
                                                 <span class="badge bg-success">{{ __('Active') }}</span>

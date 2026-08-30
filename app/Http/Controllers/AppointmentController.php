@@ -201,6 +201,7 @@ class AppointmentController extends Controller
             $custom_fields = CustomField::where('created_by', creatorId())
                 ->where('business_id', getActiveBusiness())
                 ->whereNotIn('type', $excludedTypes)
+                ->where('show_in_appointment', 1)
                 ->get();
             $options = [];
             foreach ($custom_fields as $customs) {
@@ -427,6 +428,7 @@ class AppointmentController extends Controller
             $custom_fields = CustomField::where('created_by', creatorId())
                 ->where('business_id', getActiveBusiness())
                 ->whereNotIn('type', $excludedTypes)
+                ->where('show_in_appointment', 1)
                 ->get();
             $options = [];
             foreach ($custom_fields as $customs) {
@@ -651,10 +653,16 @@ class AppointmentController extends Controller
 
             $custom_field = company_setting('custom_field_enable', $business->created_by, $business->id);
 
+            // This is the public online-booking widget, not the internal
+            // staff appointment form — a field can be shown to staff
+            // without being exposed publicly here, or the other way round,
+            // so it's gated on its own show_on_online_widget flag rather
+            // than show_in_appointment.
             $excludedTypes = ['checkbox', 'radio', 'time', 'select'];
             $custom_fields = CustomField::where('created_by', $business->created_by)
                 ->where('business_id', $business->id)
                 ->whereNotIn('type', $excludedTypes)
+                ->where('show_on_online_widget', 1)
                 ->get();
             $options = [];
             foreach ($custom_fields as $customs) {
@@ -945,8 +953,22 @@ class AppointmentController extends Controller
             $custom_field = company_setting('custom_field_enable', $business->created_by, $business->id);
             // Process the values from the request
             if (!empty($custom_field) && $custom_field == 'on') {
+                // This is a public, unauthenticated endpoint — only accept a
+                // label the business actually flagged for the widget, so a
+                // crafted request can't stuff arbitrary keys into
+                // appointments.custom_field.
+                $allowedLabels = CustomField::where('created_by', $business->created_by)
+                    ->where('business_id', $business->id)
+                    ->where('show_on_online_widget', 1)
+                    ->pluck('label')
+                    ->all();
+
                 foreach ($request->values as $type => $fields) {
                     foreach ($fields as $label => $value) {
+                        if (!in_array($label, $allowedLabels, true)) {
+                            continue;
+                        }
+
                         if (is_array($value)) {
                             if ($type === 'checkbox') {
                                 $customFieldValues[$label] = implode(',', $value);

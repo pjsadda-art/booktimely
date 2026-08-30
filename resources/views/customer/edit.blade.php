@@ -1,3 +1,9 @@
+@php
+    // Same rule the Customer Profile page's Communication Group uses — a
+    // toggle can only be turned on if the matching contact detail is valid.
+    $smsToggleDisabled = !\App\Models\Customer::isValidAustralianMobile($customer->customer->mobile_no ?? null);
+    $emailToggleDisabled = !\App\Models\Customer::isValidEmail($customer->customer->email ?? null);
+@endphp
 {{Form::model($customer,array('route' => array('customer.update', $customer->id), 'method' => 'PUT', 'id' => 'business-edit-form','enctype' => 'multipart/form-data','class'=>'needs-validation','novalidate')) }}
     <div class="modal-body">
         <div class="row">
@@ -60,7 +66,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     {{Form::label('gender',__('Gender'),['class'=>'form-label'])}}
                     {!! Form::select('gender', ['male' => 'Male', 'female' => 'Female'], null, ['class' => 'form-control']) !!}
@@ -71,7 +77,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     {{Form::label('dob',__('Date of Birth'),['class'=>'form-label'])}}
                     {{Form::date('dob',null,array('class'=>'form-control','placeholder'=>__('Select Date')))}}
@@ -82,6 +88,36 @@
                     @enderror
                 </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="communication_sms" name="communication_sms"
+                            value="1"
+                            {{ $customer->communication_sms && !$smsToggleDisabled ? 'checked' : '' }}
+                            {{ $smsToggleDisabled ? 'disabled' : '' }}>
+                        <label class="form-check-label" for="communication_sms">{{ __('SMS Communication') }}</label>
+                        @if ($smsToggleDisabled)
+                            <small class="text-danger d-block">{{ __('Requires a valid Australian mobile number (04xxxxxxxx or +614xxxxxxxx).') }}</small>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="communication_email" name="communication_email"
+                            value="1"
+                            {{ $customer->communication_email && !$emailToggleDisabled ? 'checked' : '' }}
+                            {{ $emailToggleDisabled ? 'disabled' : '' }}>
+                        <label class="form-check-label" for="communication_email">{{ __('Email Communication') }}</label>
+                        @if ($emailToggleDisabled)
+                            <small class="text-danger d-block">{{ __('Requires a valid email address on file.') }}</small>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="col-md-12">
                 <div class="form-group mb-0">
                     {{Form::label('description',__('Description'),['class'=>'form-label']) }}
@@ -91,6 +127,16 @@
                         <strong class="text-danger">{{ $message }}</strong>
                     </small>
                     @enderror
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group mb-0">
+                    <div class="form-check form-switch">
+                        {{Form::checkbox('is_walkin', 1, $customer->is_walkin, ['class' => 'form-check-input', 'id' => 'is_walkin'])}}
+                        {{Form::label('is_walkin', __('Walk-in Customer'), ['class' => 'form-check-label'])}}
+                    </div>
+                    <small class="text-muted d-block">{{ __('No contact details required. This customer will receive no SMS or email communication.') }}</small>
                 </div>
             </div>
 

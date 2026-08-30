@@ -82,6 +82,21 @@ class CustomFieldController extends Controller
                         'business_id' => $business->id,
                         'created_by' => $business->created_by,
                         'option' => isset($options[$key]) ? json_encode($options[$key]) : NULL, // Store merged options as JSON string
+                        // Defaults on if the paired hidden input somehow didn't
+                        // make it through — a field silently vanishing from the
+                        // appointment form is a worse failure than it staying visible.
+                        'show_in_appointment' => isset($request->show_in_appointment[$key])
+                            ? (bool) $request->show_in_appointment[$key]
+                            : true,
+                        'show_in_quotation' => isset($request->show_in_quotation[$key])
+                            ? (bool) $request->show_in_quotation[$key]
+                            : true,
+                        'show_in_invoice' => isset($request->show_in_invoice[$key])
+                            ? (bool) $request->show_in_invoice[$key]
+                            : true,
+                        'show_on_online_widget' => isset($request->show_on_online_widget[$key])
+                            ? (bool) $request->show_on_online_widget[$key]
+                            : true,
                     ]
                 );
             }

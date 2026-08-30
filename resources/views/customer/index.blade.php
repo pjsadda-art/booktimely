@@ -55,6 +55,12 @@
                                     {{ Form::text('email', isset($_GET['email']) ? $_GET['email'] : null, ['class' => 'form-control', 'placeholder' => 'Enter Email']) }}
                                 </div>
                             </div>
+                            <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 col-12 mr-2">
+                                <div class="btn-box">
+                                    {{ Form::label('mobile_no', __('Mobile No'), ['class' => 'form-label']) }}
+                                    {{ Form::text('mobile_no', isset($_GET['mobile_no']) ? $_GET['mobile_no'] : null, ['class' => 'form-control', 'placeholder' => 'Enter Mobile No']) }}
+                                </div>
+                            </div>
                             <div class="col-auto float-end mt-4 d-flex">
                                 <a href="#" class="btn btn-sm btn-primary me-2"
                                     onclick="document.getElementById('user_submit').submit(); return false;"
@@ -92,9 +98,35 @@
                                     </a>
                                 </h4>
                                 <span class="text-dark text-md">{{ $customer->customer->email ?? '-' }}</span>
-                                @if ($customer->is_high_risk)
-                                    <span class="badge bg-danger ms-1">{{ __('High risk') }}</span>
-                                @endif
+                                @php
+                                    // Same rule the profile page's Communication Group
+                                    // enforces: off outright for a walk-in, and off if the
+                                    // toggle is on but there's no valid destination to send
+                                    // to — so this reflects whether a message would
+                                    // actually go out, not just the raw stored preference.
+                                    $smsOn = !$customer->is_walkin && $customer->communication_sms
+                                        && \App\Models\Customer::isValidAustralianMobile(optional($customer->customer)->mobile_no);
+                                    $emailOn = !$customer->is_walkin && $customer->communication_email
+                                        && \App\Models\Customer::isValidEmail(optional($customer->customer)->email);
+                                @endphp
+                                <div class="mt-1">
+                                    @if ($customer->is_high_risk)
+                                        <span class="badge bg-danger me-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-original-title="{{ __('Flagged high risk — every new booking requires a deposit.') }}">
+                                            <i class="ti ti-alert-triangle me-1"></i>{{ __('High Risk') }}
+                                        </span>
+                                    @endif
+                                    <span class="badge {{ $smsOn ? 'bg-success' : 'bg-light text-muted' }} me-1"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-original-title="{{ $customer->is_walkin ? __('Walk-in — no SMS sent') : ($smsOn ? __('SMS notifications on') : __('SMS notifications off')) }}">
+                                        <i class="ti {{ $smsOn ? 'ti-message-circle' : 'ti-message-circle-off' }} me-1"></i>{{ __('SMS') }}
+                                    </span>
+                                    <span class="badge {{ $emailOn ? 'bg-success' : 'bg-light text-muted' }}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-original-title="{{ $customer->is_walkin ? __('Walk-in — no email sent') : ($emailOn ? __('Email notifications on') : __('Email notifications off')) }}">
+                                        <i class="ti ti-mail me-1"></i>{{ __('Email') }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -363,6 +363,33 @@ if (!function_exists('getActiveBusiness')) {
     }
 }
 
+if (!function_exists('businessIndustryIs')) {
+    /**
+     * Whether a business's industry matches the given name (e.g. 'Auto Repair').
+     * Used to gate industry-specific features that shouldn't appear for every
+     * tenant, such as Job Cards. Defaults to the currently active business.
+     */
+    function businessIndustryIs($industryName, $businessId = null)
+    {
+        $businessId = $businessId ?? getActiveBusiness();
+
+        static $cache = [];
+        if (!array_key_exists($businessId, $cache)) {
+            $business = Business::find($businessId);
+            $cache[$businessId] = $business ? optional($business->industry)->name : null;
+        }
+
+        return $cache[$businessId] === $industryName;
+    }
+}
+
+if (!function_exists('jobCardFeatureEnabled')) {
+    function jobCardFeatureEnabled($businessId = null)
+    {
+        return businessIndustryIs('Auto Repair', $businessId);
+    }
+}
+
 if (!function_exists('getBusiness')) {
     function getBusiness()
     {

@@ -19,7 +19,7 @@ class IndustryController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
 
-        $query = Industry::query();
+        $query = Industry::withCount('businesses');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');

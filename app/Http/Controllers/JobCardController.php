@@ -25,7 +25,9 @@ class JobCardController extends Controller
 {
     protected function authorize_(): bool
     {
-        return Auth::user()->isAbleTo('appointment edit');
+        // Job Cards are an Auto Repair-specific feature: block the endpoints
+        // outright for any other industry, not just the buttons that link to them.
+        return Auth::user()->isAbleTo('appointment edit') && jobCardFeatureEnabled();
     }
 
     /**

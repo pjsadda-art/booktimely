@@ -107,6 +107,7 @@
     @endif
     @endpermission
 
+    @if (jobCardFeatureEnabled())
     @permission('appointment edit')
     <div class="action-btn me-2">
         <a href="#" class="btn btn-sm bg-primary d-inline align-items-center"
@@ -117,6 +118,7 @@
         </a>
     </div>
     @endpermission
+    @endif
 
     @permission('appointment edit')
     <div class="action-btn me-2">

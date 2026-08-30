@@ -49,14 +49,12 @@
 
                             </div>
                         </div>
-                        @if (\Auth::user()->type != 'client')
-                            <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 col-12 mr-2">
-                                <div class="btn-box">
-                                    {{ Form::label('customer', __('Customer'), ['class' => 'form-label']) }}
-                                    {{ Form::select('customer', $customer, isset($_GET['customer']) ? $_GET['customer'] : '', ['class' => 'form-control select', 'placeholder' => 'Select Customer']) }}
-                                </div>
+                        <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 col-12 mr-2">
+                            <div class="btn-box">
+                                {{ Form::label('invoice_number', __('Invoice'), ['class' => 'form-label']) }}
+                                {{ Form::text('invoice_number', isset($_GET['invoice_number']) ? $_GET['invoice_number'] : null, ['class' => 'form-control', 'placeholder' => __('Search by invoice #')]) }}
                             </div>
-                        @endif
+                        </div>
                         <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 col-12">
                             <div class="btn-box">
                                 {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}

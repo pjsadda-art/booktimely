@@ -46,6 +46,12 @@
                     </div>
                 @endif
 
+                @if ($customer->is_walkin)
+                    <div class="alert alert-secondary py-2 small">
+                        {{ __('Walk-in customer — no contact details required, no SMS or email will be sent.') }}
+                    </div>
+                @endif
+
                 <ul class="list-unstyled text-start mt-3 mb-0">
                     <li class="d-flex justify-content-between py-1">
                         <span class="text-muted">{{ __('Mobile') }}</span>
@@ -84,7 +90,9 @@
         <div class="card">
             <div class="card-header"><h6 class="mb-0">{{ __('Communication Group') }}</h6></div>
             <div class="card-body">
-                @if (!Auth::user()->isAbleTo('customer edit'))
+                @if ($customer->is_walkin)
+                    <p class="text-muted small mb-0">{{ __('Walk-in customer — communication is off regardless of these preferences.') }}</p>
+                @elseif (!Auth::user()->isAbleTo('customer edit'))
                     <div class="form-check form-switch mb-2">
                         <input type="checkbox" class="form-check-input" disabled {{ $customer->communication_sms && !$smsToggleDisabled ? 'checked' : '' }}>
                         <label class="form-check-label">{{ __('SMS notifications') }}</label>
@@ -133,6 +141,7 @@
                         @foreach ([
                             __('Lifetime sales') => $currency . number_format($summary['lifetime_sales'] ?? 0, 2),
                             __('Outstanding') => $currency . number_format($summary['outstanding'] ?? 0, 2),
+                            ...($creditNotesEnabled ? [__('Store credit') => $currency . number_format($summary['store_credit'] ?? 0, 2)] : []),
                             __('Appointments') => $summary['total_appointments'] ?? 0,
                             __('Completed') => $summary['completed'] ?? 0,
                             __('Cancelled') => $summary['cancelled'] ?? 0,
@@ -155,17 +164,25 @@
     <div class="col-xl-8 col-lg-7">
         <div class="card">
             <div class="card-header pb-0">
-                <ul class="nav nav-tabs" role="tablist">
-                    @foreach ([
-                        'appointments' => __('Appointments'),
-                        'job_cards' => __('Job Cards'),
+                @php
+                    $profileTabs = ['appointments' => __('Appointments')];
+                    if (!empty($jobCardEnabled)) {
+                        $profileTabs['job_cards'] = __('Job Cards');
+                    }
+                    $profileTabs += [
                         'invoices' => __('Invoices'),
                         'deposits' => __('Deposits'),
                         'wallet' => __('Wallet'),
                         'loyalty' => __('Loyalty'),
                         'notes' => __('Notes'),
                         'sms' => __('SMS'),
-                    ] as $key => $label)
+                    ];
+                    if (!empty($creditNotesEnabled)) {
+                        $profileTabs['credit_notes'] = __('Store Credit');
+                    }
+                @endphp
+                <ul class="nav nav-tabs" role="tablist">
+                    @foreach ($profileTabs as $key => $label)
                         <li class="nav-item">
                             <a class="nav-link {{ $loop->first ? 'active' : '' }}" data-bs-toggle="tab"
                                 href="#tab-{{ $key }}" role="tab">
@@ -180,7 +197,7 @@
             </div>
             <div class="card-body">
                 <div class="tab-content">
-                    @foreach (['appointments', 'job_cards', 'invoices', 'deposits', 'wallet', 'loyalty', 'notes', 'sms'] as $key)
+                    @foreach (array_keys($profileTabs) as $key)
                         <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="tab-{{ $key }}" role="tabpanel">
                             @if ($panels[$key]['failed'])
                                 @include('customer.profile.failed')

@@ -71,20 +71,33 @@
     <div>
         @if ($proposal->is_convert == 0)
             @permission('proposal convert invoice')
-                <div class="action-btn mb-1">
-                    {!! Form::open([
-                        'method' => 'get',
-                        'route' => ['proposal.convert', $proposal->id],
-                        'id' => 'proposal-form-' . $proposal->id,
-                    ]) !!}
-                    <a href="#" class="btn btn-sm bg-success align-items-center bs-pass-para show_confirm"
-                        data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Convert to Invoice') }}"
-                        aria-label="Delete" data-text="{{ __('This action can not be undone. Do you want to continue?') }}"
-                        data-confirm-yes="proposal-form-{{ $proposal->id }}">
-                        <i class="ti ti-exchange text-white"></i>
-                    </a>
-                    {{ Form::close() }}
-                </div>
+                {{-- Index 2 = Accepted (Proposal::$statues) — matches the
+                     gate ProposalController::convert() now enforces
+                     server-side, so this can't be greyed out here yet still
+                     fail with a raw error message when clicked. --}}
+                @if ((int) $proposal->status === 2)
+                    <div class="action-btn mb-1">
+                        {!! Form::open([
+                            'method' => 'get',
+                            'route' => ['proposal.convert', $proposal->id],
+                            'id' => 'proposal-form-' . $proposal->id,
+                        ]) !!}
+                        <a href="#" class="btn btn-sm bg-success align-items-center bs-pass-para show_confirm"
+                            data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Convert to Invoice') }}"
+                            aria-label="Delete" data-text="{{ __('This action can not be undone. Do you want to continue?') }}"
+                            data-confirm-yes="proposal-form-{{ $proposal->id }}">
+                            <i class="ti ti-exchange text-white"></i>
+                        </a>
+                        {{ Form::close() }}
+                    </div>
+                @else
+                    <div class="action-btn mb-1">
+                        <a href="#" class="btn btn-sm bg-secondary align-items-center disabled" aria-disabled="true"
+                            data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Only accepted quotations can be converted to an invoice.') }}">
+                            <i class="ti ti-exchange text-white"></i>
+                        </a>
+                    </div>
+                @endif
             @endpermission
         @else
             @permission('invoice show')

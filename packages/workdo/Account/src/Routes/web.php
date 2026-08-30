@@ -79,6 +79,15 @@ Route::group(['middleware' => ['web', 'auth', 'verified','PlanModuleCheck:Accoun
     Route::get('customer-credits', [CustomerCreditNotesController::class, 'customCreate'])->name('create.custom.credit.note');
     Route::post('custom-credit-store', [CustomerCreditNotesController::class, 'customStore'])->name('custom-credits.store');
     Route::get('credit-note/invoice', [CustomerCreditNotesController::class, 'getinvoice'])->name('invoice.get');
+    // Issue a credit note against a specific invoice (CustomerCreditNotesController::create()/store()) —
+    // sets `customer` directly from the invoice, unlike CreditNoteController's
+    // broken invoice.credit.note/invoice.credit.storenote pair above, which
+    // reads a customers.customer_id / customers.credit_note_balance column
+    // that was never created and so always fails.
+    // GET renders the modal (ajax-popup) form used by the invoice list's row
+    // action; POST (same URI) is the actual submit target.
+    Route::get('invoice/{id}/issue-credit-note', [CustomerCreditNotesController::class, 'create'])->name('invoice.credit-note.create');
+    Route::post('invoice/{id}/issue-credit-note', [CustomerCreditNotesController::class, 'store'])->name('invoice.credit-note.issue');
     Route::get('invoice/{id}/custom-credit/edit/{cn_id}', [CustomerCreditNotesController::class, 'edit'])->name('invoice.edit.custom-credit');
     Route::post('invoice/{id}/custom-credit-note/edit/{cn_id}', [CustomerCreditNotesController::class, 'update'])->name('invoice.custom-note.edit');
     Route::delete('invoice/{id}/custom-credit/delete/{cn_id}', [CustomerCreditNotesController::class, 'destroy'])->name('invoice.custom-note.delete');

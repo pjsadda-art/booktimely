@@ -146,6 +146,18 @@ class SuperAdminMenuListener
             'permission' => 'module manage'
         ]);
         $menu->add([
+            'title' => __('Business Approvals'),
+            'icon' => 'shield-check',
+            'name' => 'business-approvals',
+            'parent' => null,
+            'order' => 45,
+            'ignore_if' => [],
+            'depend_on' => [],
+            'route' => 'super.admin.business-approvals.index',
+            'module' => $module,
+            'permission' => 'business approval manage'
+        ]);
+        $menu->add([
             'title' => __('Industry Management'),
             'icon' => 'building-store',
             'name' => 'industry-management',
@@ -156,6 +168,18 @@ class SuperAdminMenuListener
             'route' => 'super.admin.industries.index',
             'module' => $module,
             'permission' => 'industry manage'
+        ]);
+        $menu->add([
+            'title' => __('Pay Type Groups'),
+            'icon' => 'credit-card',
+            'name' => 'invoice-pay-type-groups',
+            'parent' => null,
+            'order' => 1060,
+            'ignore_if' => [],
+            'depend_on' => [],
+            'route' => 'super.admin.invoice-pay-type-groups.index',
+            'module' => $module,
+            'permission' => 'invoice pay type group manage'
         ]);
     }
 }

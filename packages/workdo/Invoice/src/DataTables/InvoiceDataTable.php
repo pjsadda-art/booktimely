@@ -123,9 +123,24 @@ class InvoiceDataTable extends DataTable
             $query = $model->where('business_id', getActiveBusiness());
         }
 
-        if (!empty($request->customer)) {
-
-            $query->where('user_id', '=', $request->customer);
+        if (!empty($request->invoice_number)) {
+            // Accepts either the raw number or the formatted "#PREFIX00000N"
+            // string (Invoice::invoiceNumberFormat()) — strip everything but
+            // digits so "35", "035" and "0035" all search the same way.
+            //
+            // Matched against invoices.id, not the invoice_id column: the
+            // "Invoice" column this search box sits under is rendered via
+            // Invoice::invoiceNumberFormat($invoice->id) (see editColumn('invoice_id')
+            // below), i.e. the primary key — invoice_id itself is a legacy
+            // per-business counter that's never actually incremented
+            // (Invoice::starting_number() has its update commented out), so
+            // most older invoices share invoice_id = 1 and it doesn't match
+            // what's on screen at all. invoices.id is qualified because the
+            // branch above may join users, which also has an id column.
+            $digits = ltrim(preg_replace('/\D/', '', $request->invoice_number), '0');
+            if ($digits !== '') {
+                $query->where('invoices.id', 'like', '%' . $digits . '%');
+            }
         }
         if (!empty($request->issue_date)) {
             $date_range = explode('to', $request->issue_date);
@@ -159,8 +174,8 @@ class InvoiceDataTable extends DataTable
                             var issue_date = $("input[name=issue_date]").val();
                             d.issue_date = issue_date
 
-                            var customer = $("select[name=customer]").val();
-                            d.customer = customer
+                            var invoice_number = $("input[name=invoice_number]").val();
+                            d.invoice_number = invoice_number
 
                             var status = $("select[name=status]").val();
                             d.status = status
@@ -181,7 +196,7 @@ class InvoiceDataTable extends DataTable
 
                                          $("body").on("click", "#applyfilter", function() {
 
-                                            if (!$("input[name=issue_date]").val() && !$("select[name=customer]").val() && !$("select[name=status]").val()) {
+                                            if (!$("input[name=issue_date]").val() && !$("input[name=invoice_number]").val() && !$("select[name=status]").val()) {
                                                 toastrs("Error!", "Please select Atleast One Filter ", "error");
                                                 return;
                                             }
@@ -191,7 +206,7 @@ class InvoiceDataTable extends DataTable
 
                                         $("body").on("click", "#clearfilter", function() {
                                             $("input[name=issue_date]").val("")
-                                            $("select[name=customer]").val("")
+                                            $("input[name=invoice_number]").val("")
                                             $("select[name=status]").val("")
                                             $("#invoice-table").DataTable().draw();
                                         });

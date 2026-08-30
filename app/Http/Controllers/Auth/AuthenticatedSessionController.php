@@ -8,6 +8,7 @@ use App\Models\LoginDetail;
 use App\Models\Plan;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\TrustedDeviceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,11 +19,15 @@ use App\Facades\ModuleFacade as Module;
 
 class AuthenticatedSessionController extends Controller
 {
+    protected TrustedDeviceService $trustedDevices;
+
     /**
      * Display the login view.
      */
-    public function __construct()
+    public function __construct(TrustedDeviceService $trustedDevices)
     {
+        $this->trustedDevices = $trustedDevices;
+
         if(!file_exists(storage_path() . "/installed"))
         {
             header('location:install');
@@ -80,14 +85,40 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if (Auth::user()->requiresTwoFactor()) {
-            $request->session()->put('2fa_verified', false);
+        if (Auth::user()->type !== 'super admin') {
+            $business = \App\Models\Business::find(Auth::user()->business_id);
 
-            if (!Auth::user()->two_factor_enabled) {
-                return redirect()->route('2fa.setup');
+            if ($business && $business->registration_status !== 'approved') {
+                $status = $business->registration_status;
+
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => $status === 'rejected'
+                        ? __('Your business registration was not approved. Please contact support.')
+                        : __('Your account is pending Super Admin approval. You will be notified once approved.'),
+                ]);
             }
+        }
 
-            return redirect()->route('2fa.challenge');
+        if (Auth::user()->requiresTwoFactor()) {
+            // A device trusted from an earlier challenge skips straight through —
+            // same check EnsureTwoFactorVerified applies to every other route,
+            // done here too since login redirects to the challenge directly
+            // rather than through that middleware.
+            if ($this->trustedDevices->isTrusted($request, Auth::user())) {
+                $request->session()->put('2fa_verified', true);
+            } else {
+                $request->session()->put('2fa_verified', false);
+
+                if (!Auth::user()->two_factor_enabled) {
+                    return redirect()->route('2fa.setup');
+                }
+
+                return redirect()->route('2fa.challenge');
+            }
         }
 
         $request->session()->put('2fa_verified', true);

@@ -6,6 +6,10 @@
             {{ Form::text('name', '', ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Pay Type Name')]) }}
         </div>
         <div class="form-group col-md-12">
+            {{ Form::label('pay_type_group_id', __('Group'), ['class' => 'form-label']) }}
+            {{ Form::select('pay_type_group_id', $payTypeGroups->pluck('name', 'id'), null, ['class' => 'form-control', 'placeholder' => __('Select Group')]) }}
+        </div>
+        <div class="form-group col-md-12">
             {{ Form::label('description', __('Description'), ['class' => 'form-label']) }}
             {{ Form::textarea('description', '', ['class' => 'form-control', 'rows' => 3, 'placeholder' => __('Enter Description')]) }}
         </div>

@@ -42,7 +42,10 @@
     <link rel="icon" href="{{ check_file($favicon) ? get_file($favicon) : get_file('uploads/logo/favicon.png')  }}{{'?'.time()}}" type="image/x-icon" />
 
     <!-- font css -->
-    <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
+    {{-- Versioned so browsers that cached this file before the Staff Roster /
+         Roster Conflicts sidebar icons were added (2026-08-29) fetch the
+         current font instead of a stale cached copy that's missing them. --}}
+    <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}?v=20260829">
     <link rel="stylesheet" href="{{ asset('assets/fonts/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/fonts/material.css')}}">

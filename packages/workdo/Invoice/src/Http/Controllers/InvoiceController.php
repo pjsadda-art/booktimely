@@ -60,11 +60,9 @@ class InvoiceController extends Controller
     public function index(InvoiceDataTable $dataTable)
     {
         if (Auth::user()->isAbleTo('invoice manage')) {
-            $customer = User::where('business_id', '=', getActiveBusiness())->where('type', 'Client')->get()->pluck('name', 'id');
-
             $status = Invoice::$statues;
 
-            return $dataTable->render('invoice::invoice.index', compact('customer', 'status'));
+            return $dataTable->render('invoice::invoice.index', compact('status'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied.'));
         }
@@ -116,6 +114,13 @@ class InvoiceController extends Controller
 
     public function create($customerId = 0)
     {
+        // Pilot toggle (Super Admin Settings > "Use Modern Invoice"): the
+        // "Create" button on the invoice list already points at this same
+        // route, so branching here is the only change needed to send it to
+        // the modern form instead — no other link in the app needs updating.
+        if (admin_setting('use_modern_invoice') == 'on') {
+            return redirect()->route('modern-invoice.create');
+        }
 
         if (module_is_active('ProductService')) {
             if (Auth::user()->isAbleTo('invoice create')) {
@@ -343,6 +348,51 @@ class InvoiceController extends Controller
                         $commonCustomer['email'] = !empty($customers->email) ? $customers->email : '';
                     }
 
+                    // Pilot toggle (Super Admin Settings > "Use Modern Invoice"):
+                    // an alternate layout over the exact same data and the
+                    // exact same payment-recording endpoint (invoice.payment.store)
+                    // — nothing in the module's own data or logic changes.
+                    if (admin_setting('use_modern_invoice') == 'on') {
+                        $payTypes = \Workdo\Invoice\Entities\InvoicePayType::where('business_id', getActiveBusiness())->get();
+
+                        // Store credit as a payment method — only for a real
+                        // customer (never a walk-in, who has no durable
+                        // profile to redeem against later) who actually has
+                        // a credit note with a balance left. The "Credit
+                        // Note" pay type itself is provisioned lazily, right
+                        // here, the first time it's ever relevant — so a
+                        // business that never issues credit notes never sees
+                        // an inert option cluttering its Payment Type list.
+                        $creditCustomer = \App\Models\Customer::find($invoice->customer_id);
+                        $availableCreditNotes = collect();
+
+                        if ($creditCustomer && !$creditCustomer->is_walkin) {
+                            $availableCreditNotes = \Workdo\Account\Entities\CustomerCreditNotes::where('customer', $invoice->customer_id)
+                                ->where('remaining_amount', '>', 0)
+                                ->orderBy('date')
+                                ->get();
+                        }
+
+                        if ($availableCreditNotes->isNotEmpty()) {
+                            \Workdo\Invoice\Entities\InvoicePayType::firstOrCreate(
+                                ['business_id' => getActiveBusiness(), 'name' => 'Credit Note'],
+                                [
+                                    'description' => __('System-provisioned — lets an eligible customer redeem a credit note as payment.'),
+                                    'is_active' => 1,
+                                    'created_by' => creatorId(),
+                                ]
+                            );
+                            $payTypes = \Workdo\Invoice\Entities\InvoicePayType::where('business_id', getActiveBusiness())->get();
+                        } else {
+                            // Never show it on an invoice where it can't
+                            // actually be used, even if some other
+                            // customer's eligibility already created the row.
+                            $payTypes = $payTypes->reject(fn ($payType) => $payType->name === 'Credit Note')->values();
+                        }
+
+                        return view('invoice.modern-view', compact('invoice', 'iteams', 'payTypes', 'invoice_attachment', 'availableCreditNotes', 'creditCustomer'));
+                    }
+
                     return view('invoice::invoice.view', compact('invoice', 'customer', 'iteams', 'invoicePayment', 'customFields', 'bank_transfer_payments', 'invoice_attachment', 'mobileCustomer', 'commonCustomer', 'childCustomer','company_settings'));
                 } else {
                     return redirect()->back()->with('error', __('Permission denied.'));
@@ -357,6 +407,11 @@ class InvoiceController extends Controller
 
     public function edit($e_id)
     {
+        // Pilot toggle (Super Admin Settings > "Use Modern Invoice") — see
+        // create()'s branch above for why this is the only change needed.
+        if (admin_setting('use_modern_invoice') == 'on') {
+            return redirect()->route('modern-invoice.edit', $e_id);
+        }
 
         if (module_is_active('ProductService')) {
             if (Auth::user()->isAbleTo('invoice edit')) {
@@ -751,7 +806,7 @@ class InvoiceController extends Controller
 
             if ($invoice->invoice_module == "taskly") {
                 $item->name        = !empty($product->product()) ? $product->product()->title : '';
-            } elseif ($invoice->invoice_module == "account" || $invoice->invoice_module == "appointment" || $invoice->invoice_module == "sales" || $invoice->invoice_module == 'cardealership' || $invoice->invoice_module == 'musicinstitute' || $invoice->invoice_module == 'machinerepair' || $invoice->invoice_module == 'newspaper' || $invoice->invoice_module == 'mobileservice' || $invoice->invoice_module == 'vehicleinspection') {
+            } elseif ($invoice->invoice_module == "account" || $invoice->invoice_module == "appointment" || $invoice->invoice_module == "sales" || $invoice->invoice_module == 'cardealership' || $invoice->invoice_module == 'musicinstitute' || $invoice->invoice_module == 'machinerepair' || $invoice->invoice_module == 'newspaper' || $invoice->invoice_module == 'mobileservice' || $invoice->invoice_module == 'vehicleinspection' || $invoice->invoice_module == 'manual') {
                 $item->name        = !empty($product->product()) ? $product->product()->name : '';
                 $item->product_type   = !empty($product->product_type) ? $product->product_type : '';
             } elseif ($invoice->invoice_module == "cmms") {
@@ -771,6 +826,13 @@ class InvoiceController extends Controller
                 $item->product_type   = !empty($product->product_type) ? $product->product_type : '';
             } elseif ($invoice->invoice_module == "RestaurantMenu") {
                 $item->name        = !empty($product->product_name) ? $product->product_name : '';
+            } else {
+                // Any invoice_module not covered above (this list hasn't kept
+                // pace with every module added since) — fall back to the
+                // linked product/service name, then the free-text
+                // description, rather than leaving $item->name unset and
+                // fataling the PDF/print view with "Undefined property".
+                $item->name = !empty($product->product()) ? $product->product()->name : (!empty($product->product_name) ? $product->product_name : (!empty($product->description) ? $product->description : ''));
             }
             $item->quantity    = $product->quantity;
             $item->tax         = $product->tax;
@@ -1764,6 +1826,33 @@ class InvoiceController extends Controller
                 return redirect()->back()->with('error', __('Invalid Pay Type.'));
             }
 
+            // "Credit Note" is a system-provisioned pay type (see
+            // InvoiceController::show()'s modern branch) — only offered on
+            // an invoice at all when its customer is not a walk-in and has
+            // a credit note with a remaining balance, but re-checked here
+            // since this endpoint doesn't know which invoice screen sent it.
+            $creditNote = null;
+            if ($payType->name === 'Credit Note') {
+                $invoiceForCredit = Invoice::where('id', $invoice_id)->first();
+                $customerRow = \App\Models\Customer::find($invoiceForCredit->customer_id);
+
+                if (!$customerRow || $customerRow->is_walkin) {
+                    return redirect()->back()->with('error', __('Store credit cannot be applied for walk-in customers.'));
+                }
+
+                $creditNote = \Workdo\Account\Entities\CustomerCreditNotes::where('id', $request->credit_note_id)
+                    ->where('customer', $invoiceForCredit->customer_id)
+                    ->first();
+
+                if (!$creditNote || $creditNote->remaining_amount <= 0) {
+                    return redirect()->back()->with('error', __('Select a valid credit note with a remaining balance.'));
+                }
+
+                if ($request->amount > $creditNote->remaining_amount) {
+                    return redirect()->back()->with('error', __('Maximum :amount available on this credit note.', ['amount' => currency_format_with_sym($creditNote->remaining_amount)]));
+                }
+            }
+
             $invoicePayment                 = new InvoicePayment();
             $invoicePayment->invoice_id     = $invoice_id;
             $invoicePayment->date           = $request->date;
@@ -1783,6 +1872,18 @@ class InvoiceController extends Controller
                 $invoicePayment->add_receipt = $url;
             }
             $invoicePayment->save();
+
+            if ($creditNote) {
+                $creditNote->remaining_amount -= $request->amount;
+                // Index into CustomerCreditNotes::$statues — 1 = Partially Used, 2 = Fully Used.
+                $creditNote->status = $creditNote->remaining_amount <= 0 ? 2 : 1;
+                $creditNote->save();
+
+                if (empty($invoicePayment->reference)) {
+                    $invoicePayment->reference = __('Credit Note #:id', ['id' => $creditNote->id]);
+                    $invoicePayment->save();
+                }
+            }
 
             $invoice = Invoice::where('id', $invoice_id)->first();
             $due     = $invoice->getDue();
@@ -1861,13 +1962,24 @@ class InvoiceController extends Controller
                 }
             }
             $invoice = Invoice::where('id', $invoice_id)->first();
-            $due     = $invoice->getDue();
-            $total   = $invoice->getTotal();
 
-            if ($due > 0 && $total != $due) {
-                $invoice->status = 3;
+            // The delete has to happen before due/total are read below —
+            // getDue()/getTotal() total up $invoice->payments, so computing
+            // them first (the previous order) always used the amount that
+            // was about to be removed, leaving the status stuck at whatever
+            // it was a moment ago (e.g. still "Partially Paid" after
+            // deleting the only payment, instead of dropping to "Unpaid").
+            $payment->delete();
+
+            $due   = $invoice->getDue();
+            $total = $invoice->getTotal();
+
+            if ($due <= 0) {
+                $invoice->status = 4; // Paid — still fully covered by whatever payments remain.
+            } elseif ($total != $due) {
+                $invoice->status = 3; // Partially Paid
             } else {
-                $invoice->status = 2;
+                $invoice->status = 2; // Unpaid — nothing paid at all now.
             }
 
             $invoice->save();
@@ -1891,7 +2003,6 @@ class InvoiceController extends Controller
             // // first parameter invoice second parameter payment
             // event(new PaymentDestroyInvoice($invoice, $payment));
 
-            $payment->delete();
             return redirect()->back()->with('success', __('Payment successfully deleted.'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
@@ -1920,20 +2031,18 @@ class InvoiceController extends Controller
     {
         if (Auth::user()->isAbleTo('invoice delete')) {
             if ($invoice->business_id == getActiveBusiness()) {
+                // A paid or partially-paid invoice has real payment history
+                // behind it — deleting the invoice used to silently cascade-
+                // delete that history too, with no visible warning beyond a
+                // generic "are you sure". Now it's a hard stop: the payments
+                // have to be removed individually first (invoice.payment.destroy),
+                // each one a deliberate, visible action.
+                if ($invoice->payments()->exists()) {
+                    return redirect()->back()->with('error', __('This invoice has recorded payments. Delete every payment first, then delete the invoice.'));
+                }
+
                 if (module_is_active('Account')) {
 
-                    foreach ($invoice->payments as $invoices) {
-                        if (!empty($invoices->add_receipt)) {
-                            try {
-                                delete_file($invoices->add_receipt);
-                            } catch (\Exception $e) {
-                            }
-                        }
-                        $account = BankAccount::where(['created_by' => $invoice->created_by, 'business_id' => $invoice->business_id])->select('id')->first();
-                        $account_id = $invoices->account_id == 0 ? $account->id : $invoices->account_id;
-                        Transfer::bankAccountBalance($account_id, $invoices->amount, 'debit');
-                        $invoices->delete();
-                    }
                     if (!empty($invoice->user_id) && $invoice->user_id != 0) {
                         $customerInvoices = ['taskly', 'account', 'cmms', 'cardealership', 'musicinstitute', 'rent'];
                         $customer = Customer::where('user_id', $invoice->user_id)->where('business_id', getActiveBusiness())->first();
@@ -2315,17 +2424,20 @@ class InvoiceController extends Controller
 
         $upload = upload_file($request, 'file', $file_name, 'invoice_attachment', []);
 
-        $fileSizeInBytes = \File::size($upload['url']);
-        $fileSizeInKB = round($fileSizeInBytes / 1024, 2);
-
-        if ($fileSizeInKB < 1024) {
-            $fileSizeFormatted = $fileSizeInKB . " KB";
-        } else {
-            $fileSizeInMB = round($fileSizeInKB / 1024, 2);
-            $fileSizeFormatted = $fileSizeInMB . " MB";
-        }
-
+        // upload_file() returns no 'url' key on a rejected file (wrong
+        // extension, etc.) — sizing it before checking 'flag' crashed with
+        // "Undefined array key 'url'" instead of surfacing the real message.
         if ($upload['flag'] == 1) {
+            $fileSizeInBytes = \File::size($upload['url']);
+            $fileSizeInKB = round($fileSizeInBytes / 1024, 2);
+
+            if ($fileSizeInKB < 1024) {
+                $fileSizeFormatted = $fileSizeInKB . " KB";
+            } else {
+                $fileSizeInMB = round($fileSizeInKB / 1024, 2);
+                $fileSizeFormatted = $fileSizeInMB . " MB";
+            }
+
             $file                 = InvoiceAttechment::create(
                 [
                     'invoice_id' => $invoice->id,

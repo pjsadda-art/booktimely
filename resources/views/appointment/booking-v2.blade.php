@@ -12,8 +12,7 @@
     <div class="d-flex col-auto gap-2">
         @stack('addButtonHook')
         @permission('appointment create')
-            <a href="#" class="btn btn-sm btn-primary" data-ajax-popup="true" data-size="lg"
-                data-title="{{ __('Create New Appointment') }}" data-url="{{ route('appointment.create') }}"
+            <a href="#" class="btn btn-sm btn-primary" id="bv2-toolbar-new-appt"
                 data-bs-toggle="tooltip" data-bs-original-title="{{ __('Create') }}"><i class="ti ti-plus"></i>
             </a>
         @endpermission
@@ -79,14 +78,14 @@
            "nobody rostered at all" (a closed day) read as one consistent
            pattern rather than two different shades of not-bookable. */
         .fc .fc-non-business {
-            background: rgba(15, 23, 42, .14);
+            background: rgba(15, 23, 42, .28);
             color: #999;
             cursor: not-allowed;
             pointer-events: none;
         }
 
         .fc .fc-non-business:hover {
-            background: rgba(15, 23, 42, .14);
+            background: rgba(15, 23, 42, .28);
         }
 
         .fc-timegrid-event-short .fc-event-main-frame {
@@ -638,12 +637,15 @@
                 newCustomerUrl: "{{ route('customer.ajax.create') }}",
                 jobCardStoreUrl: "{{ route('job-card.store', ['appointment' => '__ID__']) }}",
                 jobCardFileDeleteUrl: "{{ route('job-card.file.destroy', ['id' => '__ID__']) }}",
+                proposalPrefillUrl: "{{ route('bookings-v2.proposal-prefill', ['e_id' => '__ID__']) }}",
                 license: @json($licenseKey),
                 locale: "{{ app()->getLocale() }}",
                 currency: @json($currencySymbol),
                 locations: @json($locations),
                 weekStart: {{ (int) $weekStartDay }},
                 slotInterval: {{ (int) $slotInterval }},
+                bufferBefore: {{ (int) $calendarBufferBefore }},
+                bufferAfter: {{ (int) $calendarBufferAfter }},
                 canCreate: {{ auth()->user()->isAbleTo('appointment create') ? 'true' : 'false' }},
                 canEdit: {{ auth()->user()->isAbleTo('appointment edit') ? 'true' : 'false' }},
                 canManageDeposit: {{ auth()->user()->isAbleTo('deposit manage') ? 'true' : 'false' }}
@@ -663,6 +665,10 @@
                 saved: @json(__('Appointment saved.')),
                 saveFailed: @json(__('Could not save the appointment.')),
                 needCustomer: @json(__('Please choose a customer.')),
+                newCustomerNeedName: @json(__('Please enter the customer\'s name.')),
+                newCustomerNeedMobile: @json(__('Please enter a mobile number.')),
+                newCustomerSaved: @json(__('Customer created.')),
+                newCustomerFailed: @json(__('Could not create the customer.')),
                 needLocation: @json(__('Please choose a location.')),
                 needStaff: @json(__('Please choose a staff member for every card.')),
                 needService: @json(__('Please add at least one service to every card.')),
@@ -772,6 +778,17 @@
 
             function hhmmss(minutes) {
                 return pad2(Math.floor(minutes / 60)) + ':' + pad2(minutes % 60) + ':00';
+            }
+
+            // "Now", rounded up to the grid's own slot interval — a sensible
+            // default start time for the header "+" button, which has no
+            // clicked slot to take one from.
+            function nowRoundedToSlot() {
+                var now = new Date();
+                var interval = CFG.slotInterval || 30;
+                var minutes = now.getHours() * 60 + now.getMinutes();
+                var rounded = Math.ceil(minutes / interval) * interval;
+                return fromMinutes(rounded % (24 * 60));
             }
 
             function shiftClock(hhmm, delta) {
@@ -930,9 +947,9 @@
                     return; // keep the 07:00–23:00 fallback
                 }
 
-                calendar.setOption('slotMinTime', shiftClock(min, -30));
-                calendar.setOption('slotMaxTime', shiftClock(max, 60));
-                calendar.setOption('scrollTime', shiftClock(min, -30));
+                calendar.setOption('slotMinTime', shiftClock(min, -CFG.bufferBefore));
+                calendar.setOption('slotMaxTime', shiftClock(max, CFG.bufferAfter));
+                calendar.setOption('scrollTime', shiftClock(min, -CFG.bufferBefore));
             }
 
             // No resource has any working hours for the viewed day — nobody is
@@ -1358,32 +1375,37 @@
                         '<td class="text-end fw-bold">' + esc(money(data.total_amount)) + '</td></tr></tfoot></table>';
                 }
 
-                // 8b. job card — scanned paper job card, attached per appointment
-                html += '<div class="bv2-section-label">' + "{{ __('Job Card') }}" + '</div><hr class="mt-0">';
+                // 8b. job card — scanned paper job card, attached per appointment.
+                // Auto Repair-specific: the server omits job_card_enabled for every
+                // other industry, so the section (and its listeners in bindJobCard)
+                // simply doesn't exist in the DOM for them.
+                if (data.job_card_enabled) {
+                    html += '<div class="bv2-section-label">' + "{{ __('Job Card') }}" + '</div><hr class="mt-0">';
 
-                var jobCardFiles = data.job_card_files || [];
-                html += '<div id="bv2-job-card-files">';
-                if (jobCardFiles.length) {
-                    jobCardFiles.forEach(function (file) {
-                        html += '<div class="d-flex align-items-center justify-content-between border rounded p-2 mb-1" data-job-card-file-row="' + file.id + '">' +
-                            '<a href="' + esc(file.url || '#') + '" target="_blank" class="text-truncate me-2">' +
-                            '<i class="ti ti-file-text me-1"></i>' + esc(file.name) + '</a>' +
-                            (CFG.canEdit
-                                ? '<button type="button" class="btn btn-sm btn-outline-danger" data-job-card-delete="' + file.id + '"><i class="ti ti-trash"></i></button>'
-                                : '') +
-                            '</div>';
-                    });
-                } else {
-                    html += '<p class="text-muted small mb-0" id="bv2-job-card-empty">' + esc(T.jobCardEmpty) + '</p>';
-                }
-                html += '</div>';
+                    var jobCardFiles = data.job_card_files || [];
+                    html += '<div id="bv2-job-card-files">';
+                    if (jobCardFiles.length) {
+                        jobCardFiles.forEach(function (file) {
+                            html += '<div class="d-flex align-items-center justify-content-between border rounded p-2 mb-1" data-job-card-file-row="' + file.id + '">' +
+                                '<a href="' + esc(file.url || '#') + '" target="_blank" class="text-truncate me-2">' +
+                                '<i class="ti ti-file-text me-1"></i>' + esc(file.name) + '</a>' +
+                                (CFG.canEdit
+                                    ? '<button type="button" class="btn btn-sm btn-outline-danger" data-job-card-delete="' + file.id + '"><i class="ti ti-trash"></i></button>'
+                                    : '') +
+                                '</div>';
+                        });
+                    } else {
+                        html += '<p class="text-muted small mb-0" id="bv2-job-card-empty">' + esc(T.jobCardEmpty) + '</p>';
+                    }
+                    html += '</div>';
 
-                if (CFG.canEdit) {
-                    html += '<div class="input-group input-group-sm mb-1">' +
-                        '<input type="file" class="form-control" id="bv2-job-card-upload" multiple accept=".jpg,.jpeg,.png,.pdf">' +
-                        '<button type="button" class="btn btn-outline-primary" id="bv2-job-card-upload-btn">' +
-                        '<i class="ti ti-upload me-1"></i>' + "{{ __('Upload') }}" + '</button></div>' +
-                        '<small class="text-muted d-block mb-2">' + esc(T.jobCardHelp) + '</small>';
+                    if (CFG.canEdit) {
+                        html += '<div class="input-group input-group-sm mb-1">' +
+                            '<input type="file" class="form-control" id="bv2-job-card-upload" multiple accept=".jpg,.jpeg,.png,.pdf">' +
+                            '<button type="button" class="btn btn-outline-primary" id="bv2-job-card-upload-btn">' +
+                            '<i class="ti ti-upload me-1"></i>' + "{{ __('Upload') }}" + '</button></div>' +
+                            '<small class="text-muted d-block mb-2">' + esc(T.jobCardHelp) + '</small>';
+                    }
                 }
 
                 // 9. history — meaningless for a walk-in with no customer record
@@ -1714,7 +1736,11 @@
                 // sequentially within it.
                 draft = {
                     locationId: selectedLocation() || soleLocationId() || '',
-                    customer: null,
+                    // A quotation "Convert to Appointment" hands over a
+                    // customer straight away (same {id,name,mobile,email}
+                    // shape the customer typeahead itself builds); nothing
+                    // else that opens this panel does.
+                    customer: prefill.customer || null,
                     customFields: {},
                     staffId: prefill.staffId ? String(prefill.staffId) : '',
                     date: prefill.date,
@@ -1732,6 +1758,25 @@
                     if (!draft.statusId) {
                         draft.statusId = formData.default_status || '';
                     }
+
+                    // Same shape addService's own push() builds — one entry
+                    // per unit, repeated ids stack (e.g. qty 2 of the same
+                    // service), and anything that doesn't resolve to a real
+                    // bookable Service (a Parts/product line on the
+                    // quotation) is silently skipped rather than blocking
+                    // the whole prefill.
+                    (prefill.serviceIds || []).forEach(function (serviceId) {
+                        var service = findService(serviceId);
+                        if (service) {
+                            draft.services.push({
+                                id: service.id,
+                                name: service.name,
+                                duration: service.duration,
+                                price: service.price
+                            });
+                        }
+                    });
+
                     renderCreate();
                 }).catch(function () {
                     setBody('<div class="text-danger small">' + esc(T.loadFailed) + '</div>');
@@ -1909,9 +1954,8 @@
                         '<input type="text" class="form-control form-control-sm" id="bv2-cust-input" ' +
                         'placeholder="' + "{{ __('Search name, mobile or email') }}" + '" autocomplete="off">' +
                         '<div class="bv2-ta-results" id="bv2-ta-results"></div></div>' +
-                        '<a href="#" class="btn btn-sm btn-outline-primary" data-ajax-popup="true" ' +
-                        'data-size="md" data-title="' + "{{ __('New Customer') }}" + '" data-url="' +
-                        esc(CFG.newCustomerUrl) + '"><i class="ti ti-plus"></i></a></div>';
+                        '<button type="button" class="btn btn-sm btn-outline-primary" data-act="new-customer" ' +
+                        'title="' + "{{ __('New Customer') }}" + '"><i class="ti ti-plus"></i></button></div>';
                 }
 
                 html += '</div>';
@@ -1999,6 +2043,152 @@
                         onClick: closePanel
                     }
                 ]);
+            }
+
+            /**
+             * The "+" next to the customer search — same card styling as the rest
+             * of this panel instead of the old customer-management Bootstrap
+             * modal, and it drops the created customer straight into draft.customer
+             * instead of leaving the appointment form to search for them again.
+             */
+            function renderNewCustomerCard() {
+                var html = '<div class="bv2-card"><div class="bv2-card-header">' +
+                    '<span>' + "{{ __('New Customer') }}" + '</span></div><div class="bv2-card-body">';
+
+                html += '<div class="bv2-field"><label>' + "{{ __('Name') }}" +
+                    ' <span class="bv2-req">*</span></label>' +
+                    '<input type="text" class="form-control form-control-sm" id="bv2-nc-name" autofocus></div>';
+
+                html += '<div class="bv2-field"><label>' + "{{ __('Mobile No') }}" +
+                    ' <span class="bv2-req">*</span></label>' +
+                    '<input type="text" class="form-control form-control-sm" id="bv2-nc-mobile" placeholder="04xxxxxxxx"></div>';
+
+                html += '<div class="bv2-field"><label>' + "{{ __('Email') }}" + '</label>' +
+                    '<input type="email" class="form-control form-control-sm" id="bv2-nc-email"></div>';
+
+                html += '<div class="bv2-field"><label>' + "{{ __('Gender') }}" + '</label>' +
+                    '<select class="form-control form-control-sm" id="bv2-nc-gender">' +
+                    '<option value="male">' + "{{ __('Male') }}" + '</option>' +
+                    '<option value="female">' + "{{ __('Female') }}" + '</option></select></div>';
+
+                // Same rule as Customer::isValidAustralianMobile()/isValidEmail() —
+                // a toggle only turns on once its matching contact detail actually
+                // looks valid, so staff see at a glance whether what they just
+                // typed will actually be reachable.
+                html += '<div class="bv2-field"><div class="form-check form-switch">' +
+                    '<input type="checkbox" class="form-check-input" id="bv2-nc-sms" disabled>' +
+                    '<label class="form-check-label" for="bv2-nc-sms">' + "{{ __('SMS Communication') }}" + '</label>' +
+                    '</div><small class="text-muted d-block" id="bv2-nc-sms-hint">' +
+                    "{{ __('Turns on once a valid mobile number is entered.') }}" + '</small></div>';
+
+                html += '<div class="bv2-field"><div class="form-check form-switch">' +
+                    '<input type="checkbox" class="form-check-input" id="bv2-nc-email-comm" disabled>' +
+                    '<label class="form-check-label" for="bv2-nc-email-comm">' + "{{ __('Email Communication') }}" + '</label>' +
+                    '</div><small class="text-muted d-block" id="bv2-nc-email-comm-hint">' +
+                    "{{ __('Turns on once a valid email is entered.') }}" + '</small></div>';
+
+                html += '</div></div>';
+
+                setBody(html);
+                bindNewCustomerValidation();
+
+                setFooter([
+                    {
+                        label: "{{ __('Create Customer') }}",
+                        className: 'btn btn-sm btn-primary flex-fill',
+                        onClick: saveNewCustomer
+                    },
+                    {
+                        label: "{{ __('Back') }}",
+                        className: 'btn btn-sm btn-light',
+                        onClick: renderCreate
+                    }
+                ]);
+
+                var nameInput = document.getElementById('bv2-nc-name');
+                if (nameInput) {
+                    nameInput.focus();
+                }
+            }
+
+            function looksLikeAuMobile(raw) {
+                var cleaned = (raw || '').replace(/[^0-9+]/g, '');
+                if (cleaned.indexOf('00') === 0) { cleaned = '+' + cleaned.slice(2); }
+                if (/^61\d{9}$/.test(cleaned)) { cleaned = '+' + cleaned; }
+                return /^(?:\+614|04)\d{8}$/.test(cleaned);
+            }
+
+            function looksLikeEmail(raw) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((raw || '').trim());
+            }
+
+            function bindNewCustomerValidation() {
+                var mobileInput = document.getElementById('bv2-nc-mobile');
+                var smsToggle = document.getElementById('bv2-nc-sms');
+                var emailInput = document.getElementById('bv2-nc-email');
+                var emailToggle = document.getElementById('bv2-nc-email-comm');
+
+                function sync(input, toggle, check) {
+                    var ok = check(input.value);
+                    toggle.disabled = !ok;
+                    toggle.checked = ok;
+                }
+
+                mobileInput.addEventListener('input', function () { sync(mobileInput, smsToggle, looksLikeAuMobile); });
+                emailInput.addEventListener('input', function () { sync(emailInput, emailToggle, looksLikeEmail); });
+            }
+
+            function saveNewCustomer() {
+                var name = document.getElementById('bv2-nc-name').value.trim();
+                var mobile = document.getElementById('bv2-nc-mobile').value.trim();
+                var email = document.getElementById('bv2-nc-email').value.trim();
+                var gender = document.getElementById('bv2-nc-gender').value;
+
+                if (!name) {
+                    notify(T.newCustomerNeedName, 'error');
+                    return;
+                }
+                if (!mobile) {
+                    notify(T.newCustomerNeedMobile, 'error');
+                    return;
+                }
+
+                lockFooter(T.saving);
+
+                var body = new FormData();
+                body.append('name', name);
+                body.append('mobile_no', mobile);
+                body.append('email', email);
+                body.append('gender', gender);
+                body.append('communication_sms', document.getElementById('bv2-nc-sms').checked ? '1' : '0');
+                body.append('communication_email', document.getElementById('bv2-nc-email-comm').checked ? '1' : '0');
+
+                fetch(CFG.newCustomerUrl, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrf() },
+                    body: body
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (!data.status) {
+                            throw new Error(data.message || T.newCustomerFailed);
+                        }
+
+                        draft.customer = {
+                            id: data.customer.user_id || data.customer.id,
+                            name: data.customer.name,
+                            mobile: data.customer.mobile,
+                            email: data.customer.email
+                        };
+
+                        notify(data.message || T.newCustomerSaved, 'success');
+                        renderCreate();
+                        loadCustomerHistory();
+                    })
+                    .catch(function (error) {
+                        notify(error.message || T.newCustomerFailed, 'error');
+                        renderNewCustomerCard();
+                    });
             }
 
             /* ===================== edit mode ===================== */
@@ -2253,6 +2443,10 @@
                         el.addEventListener('click', function () {
                             draft.customer = null;
                             rerenderDraft();
+                        });
+                    } else if (act === 'new-customer') {
+                        el.addEventListener('click', function () {
+                            renderNewCustomerCard();
                         });
                     } else if (act === 'edit-date') {
                         el.addEventListener('change', function () {
@@ -2682,6 +2876,24 @@
                 document.getElementById('bv2-staff-mode').addEventListener('change', reload);
                 document.getElementById('bv2-refresh').addEventListener('click', reload);
                 document.getElementById('bv2-panel-close').addEventListener('click', closePanel);
+
+                // The header "+" — unlike a calendar-slot click, it has no
+                // date/time/staff to prefill from, so it opens the same create
+                // panel with today's date (whatever the calendar is currently
+                // viewing), the next slot-aligned time, and staff left for the
+                // user to pick — Staff/Date/Time are editable fields on that
+                // panel either way.
+                var newApptButton = document.getElementById('bv2-toolbar-new-appt');
+                if (newApptButton) {
+                    newApptButton.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        openCreate({
+                            staffId: '',
+                            date: localDmy(calendar.getDate()),
+                            time: nowRoundedToSlot()
+                        });
+                    });
+                }
             }
 
             /* ===================== boot ===================== */
@@ -2794,8 +3006,51 @@
                 calendar.render();
                 bindToolbar();
                 syncToolbar();
+                openProposalPrefillFromUrl();
 
                 window.addEventListener('resize', fitHeight);
+            }
+
+            // "Convert to Appointment" on an accepted quotation (proposal/modern-view.blade.php)
+            // lands here as ?convert_proposal=<encrypted id> rather than posting
+            // any booking data itself — this is the only place that knows how
+            // to turn a customer + a list of services into a real draft
+            // appointment, so it fetches the quotation's summary and opens the
+            // same New Appointment panel everyone else uses, pre-filled.
+            function openProposalPrefillFromUrl() {
+                var encId = new URLSearchParams(window.location.search).get('convert_proposal');
+
+                if (!encId || !CFG.canCreate) {
+                    return;
+                }
+
+                // One-shot: a refresh of this page should show a normal
+                // calendar, not silently reopen the same prefill.
+                var url = new URL(window.location.href);
+                url.searchParams.delete('convert_proposal');
+                window.history.replaceState({}, '', url);
+
+                fetch(CFG.proposalPrefillUrl.replace('__ID__', encId), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (data.error) {
+                            notify(data.error, 'error');
+                            return;
+                        }
+
+                        openCreate({
+                            staffId: '',
+                            date: localDmy(calendar.getDate()),
+                            time: nowRoundedToSlot(),
+                            customer: data.customer,
+                            serviceIds: data.serviceIds
+                        });
+                    })
+                    .catch(function () {
+                        notify(T.loadFailed, 'error');
+                    });
             }
 
             // Measure after first paint so the height fit sees a laid-out page.

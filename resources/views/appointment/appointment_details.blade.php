@@ -238,6 +238,7 @@
             })();
         </script>
 
+        @if (jobCardFeatureEnabled())
         <hr class="my-3">
 
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -390,6 +391,7 @@
                 });
             })();
         </script>
+        @endif
 
          @if (!empty($appointments->custom_field))
         @php

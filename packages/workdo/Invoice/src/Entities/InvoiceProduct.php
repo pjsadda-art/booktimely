@@ -28,7 +28,7 @@ class InvoiceProduct extends Model
     public function product()
     {
         $invoice =  $this->hasMany(Invoice::class, 'id', 'invoice_id')->first();
-        if (!empty($invoice) && $invoice->invoice_module == "account" || !empty($invoice) && $invoice->invoice_module == "appointment" || !empty($invoice) && $invoice->invoice_module == "appointment_deposit" || !empty($invoice) && $invoice->invoice_module == "machinerepair" || !empty($invoice) && $invoice->invoice_module == "sales" || $invoice->invoice_module == 'musicinstitute'|| $invoice->invoice_module == 'mobileservice' || $invoice->invoice_module == 'vehicleinspection' )  {
+        if (!empty($invoice) && $invoice->invoice_module == "account" || !empty($invoice) && $invoice->invoice_module == "appointment" || !empty($invoice) && $invoice->invoice_module == "appointment_deposit" || !empty($invoice) && $invoice->invoice_module == "machinerepair" || !empty($invoice) && $invoice->invoice_module == "sales" || $invoice->invoice_module == 'musicinstitute'|| $invoice->invoice_module == 'mobileservice' || $invoice->invoice_module == 'vehicleinspection' || (!empty($invoice) && $invoice->invoice_module == "manual") )  {
             if (module_is_active('ProductService')) {
                 return $this->hasOne(\Workdo\ProductService\Entities\ProductService::class, 'id', 'product_id')->first();
             } else {

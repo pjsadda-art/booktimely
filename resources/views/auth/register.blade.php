@@ -60,7 +60,7 @@
                             </label>
                             <select id="industry_id" name="industry_id" class="form-control @error('industry_id') is-invalid @enderror" required>
                                 @foreach($industries as $id => $name)
-                                    <option value="{{ $id }}" {{ old('industry_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                    <option value="{{ $id }}" {{ old('industry_id', 1) == $id ? 'selected' : '' }}>{{ $name }}</option>
                                 @endforeach
                             </select>
                             @error('industry_id')

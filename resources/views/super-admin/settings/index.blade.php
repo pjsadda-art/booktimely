@@ -376,6 +376,66 @@
                               </div>
                           </div>
                       </div>
+                      <div class="col-xxl-3 col-md-4 col-sm-6 col-12 ">
+                          <div class="card h-100 mb-0">
+                              <div class="card-header p-2">
+                                  <h6 class="">
+                                      <i class="ti ti-shield-check me-2"></i>
+                                      {{ __('Require Business Approval') }}
+                                  </h6>
+                              </div>
+                              <div class="card-body p-2">
+                                  <div class="form-check form-switch d-flex gap-2 flex-column p-0">
+                                      <label class="form-check-label f-w-600 pl-1"
+                                          for="require_business_approval">{{ __('Require Business Approval') }}</label>
+                                      <input type="checkbox" class="form-check-input ms-0 mb-3"
+                                          id="require_business_approval" name="require_business_approval"
+                                          {{ isset($settings['require_business_approval']) && $settings['require_business_approval'] == 'on' ? 'checked' : '' }} />
+                                      <small class="text-muted pl-1">{{ __('New tenant signups stay pending until Super Admin approves them.') }}</small>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-xxl-3 col-md-4 col-sm-6 col-12 ">
+                          <div class="card h-100 mb-0">
+                              <div class="card-header p-2">
+                                  <h6 class="">
+                                      <i class="ti ti-file-invoice me-2"></i>
+                                      {{ __('Use Modern Invoice') }}
+                                  </h6>
+                              </div>
+                              <div class="card-body p-2">
+                                  <div class="form-check form-switch d-flex gap-2 flex-column p-0">
+                                      <label class="form-check-label f-w-600 pl-1"
+                                          for="use_modern_invoice">{{ __('Use Modern Invoice') }}</label>
+                                      <input type="checkbox" class="form-check-input ms-0 mb-3"
+                                          id="use_modern_invoice" name="use_modern_invoice"
+                                          {{ isset($settings['use_modern_invoice']) && $settings['use_modern_invoice'] == 'on' ? 'checked' : '' }} />
+                                      <small class="text-muted pl-1">{{ __('Pilot: the invoice view screen (/invoice/{id}) uses a redesigned layout instead of the original. No data or payment behaviour changes — display only.') }}</small>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-xxl-3 col-md-4 col-sm-6 col-12 ">
+                          <div class="card h-100 mb-0">
+                              <div class="card-header p-2">
+                                  <h6 class="">
+                                      <i class="ti ti-file-text me-2"></i>
+                                      {{ __('Use Modern Quotation') }}
+                                  </h6>
+                              </div>
+                              <div class="card-body p-2">
+                                  <div class="form-check form-switch d-flex gap-2 flex-column p-0">
+                                      <label class="form-check-label f-w-600 pl-1"
+                                          for="use_modern_quotation">{{ __('Use Modern Quotation') }}</label>
+                                      <input type="checkbox" class="form-check-input ms-0 mb-3"
+                                          id="use_modern_quotation" name="use_modern_quotation"
+                                          {{ isset($settings['use_modern_quotation']) && $settings['use_modern_quotation'] == 'on' ? 'checked' : '' }} />
+                                      <small class="text-muted pl-1">{{ __('Pilot: the quotation create/edit/view screens (/proposal) use a redesigned layout instead of the original. No data behaviour changes — display only.') }}</small>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                   </div>
               </div>
           </div>
